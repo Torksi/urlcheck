@@ -1,0 +1,17 @@
+.idea/
+.vscode/
+node_modules/
+build/
+tmp/
+temp/
+ormconfig.json
+ormconfig.js
+.env
+.env.local
+npm-debug.log
+yarn.lock
+coverage/
+yarn-error.log
+.DS_Store
+beta-client/
+ignore.*
