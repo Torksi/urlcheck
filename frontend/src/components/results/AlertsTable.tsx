@@ -59,7 +59,7 @@ const AlertsTable: React.FC<ComponentProps> = ({ id, alertData }) => {
                           <i className="bi-search"></i>
                         </a>
                         <a
-                          href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${alert.webScanRequestId}`}
+                          href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${alert.webScanRequestId}/beautify`}
                           target="_blank"
                           className="btn btn-info text-white btn-sm"
                           rel="noreferrer"
