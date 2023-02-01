@@ -162,6 +162,7 @@ export class WebScanController {
 
     const browser = await puppeteer.launch({
       defaultViewport: { width: 1280, height: 720 },
+      executablePath: (process.env.PUPPETEER_EXECUTABLE_PATH as string) || "",
     });
     const page = await browser.newPage();
 
