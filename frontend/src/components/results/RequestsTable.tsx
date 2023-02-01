@@ -34,15 +34,19 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                 <tr key={request.id}>
                   <td>{request.order}</td>
                   <td>
-                    {request.failed && (
+                    {request.failed && !restOfUrl.startsWith("data:") && (
                       <i
                         title="Request failed"
                         className="bi bi-exclamation-triangle-fill text-danger me-3"
                       ></i>
                     )}
-                    {truncate(url[url.length - 1] || "/", 60)}
+                    {restOfUrl.startsWith("data:")
+                      ? restOfUrl.split(",")[0]
+                      : truncate(url[url.length - 1] || "/", 60)}
                     <br />
-                    <small>{restOfUrl}</small>
+                    <small>
+                      {restOfUrl.startsWith("data:") ? "truncated" : restOfUrl}
+                    </small>
                   </td>
                   <td>{request.geoIp}</td>
                   <td title={request.geoCountry}>
