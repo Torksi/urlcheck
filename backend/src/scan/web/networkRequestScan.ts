@@ -9,6 +9,17 @@ const networkRequestScan = async (
   countries: string[]
 ) => {
   for (const request of scan.networkRequests) {
+    if (
+      !["https://", "http://"].some((x) => request.requestUrl.startsWith(x))
+    ) {
+      request.failed = true;
+      request.geoCity = "N/A";
+      request.geoCountry = "XX";
+      request.geoAs = "N/A";
+      request.geoIp = "N/A";
+      continue;
+    }
+
     const fqdn = await WebScanController.getFQDN(request.requestUrl);
 
     if (fqdn === null) {
@@ -30,7 +41,7 @@ const networkRequestScan = async (
       ips.push(ip);
     }
 
-    request.geoIp = ip;
+    request.geoIp = ip || "0.0.0.0";
     request.geoCountry =
       GeoIPController.getInstance().getGeoCountryISO(ip) || "XX";
 
