@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(TrimMiddleware);
 
-app.use(cors());
+app.use(cors({ origin: true }));
 
 app.use(compression());
 
