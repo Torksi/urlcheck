@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { WebScanAlert } from "./WebScanAlert.entity";
+import { WebScanLink } from "./WebScanLink.entity";
 import { WebScanNetRequest } from "./WebScanNetRequest.entity";
 import { WebScanRedirect } from "./WebScanRedirect.entity";
 
@@ -60,6 +61,12 @@ export class WebScan extends BaseEntity {
     eager: false,
   })
   alerts: WebScanAlert[];
+
+  @OneToMany(() => WebScanLink, (link) => link.webScan, {
+    cascade: true,
+    eager: false,
+  })
+  links: WebScanLink[];
 
   @Column({ type: "text" })
   screenshot: string;

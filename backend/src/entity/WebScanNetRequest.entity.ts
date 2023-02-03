@@ -20,6 +20,9 @@ export class WebScanNetRequest extends BaseEntity {
   @Column()
   requestUrl: string;
 
+  @Column({ default: "GET" })
+  requestMethod: string;
+
   @Column({ type: "jsonb" })
   requestHeaders: Record<string, string>;
 

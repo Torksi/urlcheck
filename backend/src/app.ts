@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
 import compression from "compression";
 import cors from "cors";

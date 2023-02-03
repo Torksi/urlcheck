@@ -1,6 +1,7 @@
 import dynamicSort from "../../util/dynamicSort";
 import getFlagEmoji from "../../util/flagEmoji";
 import truncate from "../../util/truncate";
+import MethodBadge from "../MethodBadge";
 import SuspicionBadge from "../SuspicionBadge";
 
 interface ComponentProps {
@@ -18,6 +19,7 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
             <th scope="col">URL</th>
             <th scope="col">IP</th>
             <th scope="col">Location</th>
+            <th scope="col">Method</th>
             <th scope="col">Status</th>
             <th scope="col">Type</th>
             <th scope="col">Size</th>
@@ -51,6 +53,9 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                   <td>{request.geoIp}</td>
                   <td title={request.geoCountry}>
                     {getFlagEmoji(request.geoCountry)} {request.geoAs}
+                  </td>
+                  <td>
+                    <MethodBadge method={request.requestMethod} />
                   </td>
                   <td>{request.statusCode}</td>
                   <td>{request.responseType}</td>

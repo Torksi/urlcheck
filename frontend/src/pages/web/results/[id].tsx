@@ -1,24 +1,26 @@
 /* eslint-disable @next/next/no-img-element */
 import axios from "axios";
 import moment from "moment";
+import { useReCaptcha } from "next-recaptcha-v3";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import useSWR from "swr";
-import ErrorScreen from "../../components/ErrorScreen";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
-import AlertsTable from "../../components/results/AlertsTable";
-import GlobalVariablesTable from "../../components/results/GlobalVariablesTable";
-import RedirectsTable from "../../components/results/RedirectsTable";
-import RequestsTable from "../../components/results/RequestsTable";
-import SuspicionBadge from "../../components/SuspicionBadge";
-import Title from "../../components/Title";
-import getCountry from "../../util/countryName";
-import dynamicSort from "../../util/dynamicSort";
-import getFlagEmoji from "../../util/flagEmoji";
-import truncate from "../../util/truncate";
+import ErrorScreen from "../../../components/ErrorScreen";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import AlertsTable from "../../../components/results/AlertsTable";
+import GlobalVariablesTable from "../../../components/results/GlobalVariablesTable";
+import LinksTable from "../../../components/results/LinksTable";
+import RedirectsTable from "../../../components/results/RedirectsTable";
+import RequestsTable from "../../../components/results/RequestsTable";
+import SuspicionBadge from "../../../components/SuspicionBadge";
+import Title from "../../../components/Title";
+import getCountry from "../../../util/countryName";
+import dynamicSort from "../../../util/dynamicSort";
+import getFlagEmoji from "../../../util/flagEmoji";
+import truncate from "../../../util/truncate";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -27,6 +29,7 @@ export default function ResultPage() {
   const [requestsData, setRequestsData] = useState<any>(null);
   const [redirectData, setRedirectData] = useState<any>(null);
   const [alertData, setAlertData] = useState<any>(null);
+  const [linkData, setLinkData] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
@@ -70,6 +73,13 @@ export default function ResultPage() {
       axios
         .get(`/api/webscan/alerts/${id}`)
         .then((res) => setAlertData(res.data.data))
+        .catch((err) => {
+          return null;
+        });
+
+      axios
+        .get(`/api/webscan/links/${id}`)
+        .then((res) => setLinkData(res.data.data))
         .catch((err) => {
           return null;
         });
@@ -446,6 +456,29 @@ export default function ResultPage() {
                   {redirectData && (
                     <RedirectsTable id={id} redirectData={redirectData} />
                   )}
+                </div>
+              </div>
+            </Tab>
+            <Tab
+              eventKey="links"
+              title={
+                <span>
+                  <span className="badge text-bg-info text-white rounded-pill badge-sm me-2">
+                    {linkData ? linkData.length : 0}
+                  </span>
+                  Links
+                </span>
+              }
+            >
+              <div className="row">
+                <div className="col-md-12">
+                  <h4>Links{linkData ? ` (${linkData.length})` : ""}</h4>
+                  {!alertData && (
+                    <div className="text-center">
+                      <LoadingSpinner />
+                    </div>
+                  )}
+                  {linkData && <LinksTable id={id} linkData={linkData} />}
                 </div>
               </div>
             </Tab>

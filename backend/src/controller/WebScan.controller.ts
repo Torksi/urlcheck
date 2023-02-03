@@ -17,9 +17,9 @@ import redirectScan from "../scan/web/redirectScan";
 import staticScriptScan from "../scan/web/staticScriptScan";
 import { WebScanAlert } from "../entity/WebScanAlert.entity";
 import { IScanError } from "../error/IScanError";
+import { WebScanLink } from "../entity/WebScanLink.entity";
 
 export interface IExtendedIncomingMessage extends IncomingMessage {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body: any;
 }
 
@@ -74,6 +74,22 @@ export class WebScanController {
   }
 
   /**
+   * Get links associated with webscan
+   * @param {string} id - webscan id
+   * @returns An array of WebScanAlert objects.
+   */
+  public static async getLinksById(id: string): Promise<WebScanLink[] | null> {
+    try {
+      const scan = await appDataSource
+        .getRepository(WebScan)
+        .findOne({ where: { id }, relations: ["links"] });
+      return scan?.links.sort(dynamicSort("target")) || null;
+    } catch (_err) {
+      return null;
+    }
+  }
+
+  /**
    * Get redirects associated with webscan
    * @param {string} id - webscan id
    * @returns An array of WebScanRedirect objects.
@@ -111,6 +127,7 @@ export class WebScanController {
    * @returns A promise that resolves to a string.
    */
   public static async resolveIP(fqdn: string): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return new Promise((resolve, _reject) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       dns.lookup(fqdn, (err, address, _family) => {
@@ -132,11 +149,9 @@ export class WebScanController {
       "text/plain",
       "application/javascript",
       "text/javascript",
-      "application/x-javascript",
+      //"application/x-javascript",
       "text/csv",
       "text/xml",
-      "text/calendar",
-      "application/pdf",
     ];
 
     const fqdnBlacklist = ["192.168", "127.0", "172.16", "10.0"];
@@ -156,17 +171,11 @@ export class WebScanController {
 
     const fqdn = await this.getFQDN(url);
 
-    if (fqdn === null) {
-      return { message: "Domain name is invalid", error: true } as IScanError;
-    }
-
-    console.log(`fqdn: ${fqdn} - url: ${url}`);
-
     if (
+      fqdn === null ||
       fqdn.toLowerCase() === "localhost" ||
       fqdnBlacklist.some((blacklisted) => fqdn.startsWith(blacklisted))
     ) {
-      console.error("fqdn blacklist check failed");
       return { message: "Domain name is invalid", error: true } as IScanError;
     }
 
@@ -183,13 +192,13 @@ export class WebScanController {
     const browser = await puppeteer.launch({
       defaultViewport: { width: 1280, height: 720 },
       executablePath: (process.env.PUPPETEER_EXECUTABLE_PATH as string) || "",
-      args: ["--disable-web-security"],
+      args: ["--disable-web-security", "--disable-features=site-per-process"],
+      ignoreHTTPSErrors: true,
+      headless: false,
     });
     const page = await browser.newPage();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const redirects: any[] = [];
 
     await page.setUserAgent(
@@ -228,20 +237,28 @@ export class WebScanController {
         uri: request.url(),
         resolveWithFullResponse: true,
       })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then((response: IExtendedIncomingMessage) => {
           const statusCode = response.statusCode;
-          const requestUrl = request.url();
-          const requestHeaders = request.headers();
-          const requestPostData = request.postData();
-          const responseHeaders = response.headers;
-          const responseSize = responseHeaders["content-length"];
+          const requestUrl = request.url().replace("\u0000", "");
+          const requestHeaders = JSON.parse(
+            JSON.stringify(request.headers()).replace("\u0000", "")
+          );
+          const requestMethod = request.method().replace("\u0000", "");
+          const requestPostData = (request.postData() || "")
+            .replaceAll("\u0000", "")
+            .replaceAll("\x00", "");
+          const responseHeaders = JSON.parse(
+            JSON.stringify(response.headers).replace("\u0000", "")
+          );
+          const responseSize = responseHeaders["content-length"] || "";
           let responseBody = response.body;
 
           const contentType = responseHeaders["content-type"] || "text/plain";
 
           if (includeResponseTypes.some((ext) => contentType.startsWith(ext))) {
-            responseBody = responseBody.replaceAll("\u0000", "");
+            responseBody = responseBody
+              .replaceAll("\u0000", "")
+              .replaceAll("\x00", "");
           } else {
             responseBody = null;
           }
@@ -249,6 +266,7 @@ export class WebScanController {
           result.push({
             statusCode,
             requestUrl,
+            requestMethod,
             requestHeaders,
             requestPostData,
             responseHeaders,
@@ -257,10 +275,11 @@ export class WebScanController {
             responseBody,
             order: requestOrder,
           });
+
           requestOrder++;
           request.continue();
         })
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .catch((error: any) => {
           result.push({
             order: requestOrder,
@@ -294,7 +313,8 @@ export class WebScanController {
     } catch (err) {
       console.error(err);
       return {
-        message: "Internal scanner issue. Please try again later.",
+        message:
+          "Something went wrong. Make sure the URL is valid and try again later.",
         error: true,
       } as IScanError;
     }
@@ -314,7 +334,6 @@ export class WebScanController {
     });
 
     await page.evaluate(async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const vars: any = {};
       // @ts-ignore
       const defs = await getGlobalWindowDefaults();
@@ -322,10 +341,8 @@ export class WebScanController {
       function refReplacer() {
         const m = new Map(),
           v = new Map();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let init: any = null;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return function (field: any, value: any) {
           const p =
             // @ts-ignore
@@ -348,7 +365,13 @@ export class WebScanController {
       for (const key in window) {
         // @ts-ignore
         if (!defs.includes(key)) {
-          vars[key] = JSON.stringify(window[key], refReplacer());
+          try {
+            vars[key] = JSON.stringify(window[key], refReplacer())
+              .replaceAll("\u0000", "")
+              .replaceAll("\x00", "");
+          } catch (err) {
+            //
+          }
         }
       }
 

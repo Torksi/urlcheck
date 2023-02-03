@@ -61,7 +61,6 @@ export class WebScanRoute extends Route {
         });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const scan: any = await WebScanController.scan(req, url);
 
       if (!scan || Object.keys(scan).includes("error")) {
@@ -102,6 +101,20 @@ export class WebScanRoute extends Route {
       const { id } = req.params;
 
       const results: any = await WebScanController.getRequestsById(id);
+
+      if (!results) {
+        return res
+          .status(404)
+          .send({ success: false, message: "Scan not found" });
+      }
+
+      return res.send({ success: true, data: results });
+    });
+
+    this.router.get("/links/:id", async (req, res) => {
+      const { id } = req.params;
+
+      const results: any = await WebScanController.getLinksById(id);
 
       if (!results) {
         return res

@@ -1,54 +1,63 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useReCaptcha } from "next-recaptcha-v3";
-import Title from "../components/Title";
+import Title from "../../components/Title";
 import axios from "axios";
-import LoadingScan from "../components/LoadingScan";
-import ErrorScreen from "../components/ErrorScreen";
+import LoadingScan from "../../components/LoadingScan";
+import ErrorScreen from "../../components/ErrorScreen";
 import Link from "next/link";
 
-export default function IndexPage() {
+export default function ScanWebPage() {
   const router = useRouter();
+  const urlQuery = router.query.url as string;
   const searchInputRef = useRef<any>(null);
   const [searchText, setSearchText] = useState("");
-  const [scanStatus, setScanStatus] = useState(0);
+  const [scanStatus, setScanStatus] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
 
   const { executeRecaptcha } = useReCaptcha();
 
-  const handleWebSearch = async (event: FormEvent) => {
-    event.preventDefault();
+  const handleWebSearch = useCallback(
+    async (event: FormEvent | null) => {
+      if (event) {
+        event.preventDefault();
+      }
 
-    const search = searchText.trim();
-    setErrorMessage("");
-    setScanStatus(1);
+      const token = await executeRecaptcha("startScanOther");
 
-    const token = await executeRecaptcha("startScan");
+      const search = searchText.trim();
+      setErrorMessage("");
+      setScanStatus(1);
 
-    axios
-      .post("/api/webscan", { url: search, token })
-      .then((res) => {
-        setSearchText("");
-        router.push(`/web/results/${res.data.id}`);
-      })
-      .catch((err) => {
-        setScanStatus(0);
-        if (err.response && err.response.data) {
-          setErrorMessage(err.response.data.message);
-        } else {
-          console.error(err);
-          setErrorMessage("Something went wrong. Please try again later.");
-        }
-      });
-  };
+      axios
+        .post("/api/webscan", { url: search || urlQuery, token })
+        .then((res) => {
+          setSearchText("");
+          router.push(`/web/results/${res.data.id}`);
+        })
+        .catch((err) => {
+          setScanStatus(0);
+          if (err.response && err.response.data) {
+            setErrorMessage(err.response.data.message);
+          } else {
+            console.error(err);
+            setErrorMessage("Something went wrong. Please try again later.");
+          }
+        });
+    },
+    [executeRecaptcha, router, searchText, urlQuery]
+  );
 
   useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, []);
+    setTimeout(() => {
+      if (urlQuery) {
+        setSearchText(urlQuery);
+        handleWebSearch(null);
+      }
+    }, 1500);
+  }, [urlQuery, handleWebSearch]);
 
   return (
     <>
@@ -101,24 +110,6 @@ export default function IndexPage() {
               </form>
             )}
             {scanStatus === 1 && <LoadingScan />}
-          </div>
-        </div>
-
-        <hr />
-
-        <div className="row">
-          <div className="col-md-12">
-            <h2 className="subtitle">About</h2>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <p>
-              <strong>urlcheck</strong> is a tool to scan suspicious links. It
-              browses the given URL like any normal user would. It then gives
-              you a report of what it found including a screenshot, list of
-              network requests and other useful information.
-            </p>
           </div>
         </div>
       </main>

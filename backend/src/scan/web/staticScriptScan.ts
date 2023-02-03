@@ -1,5 +1,6 @@
 import { WebScan } from "../../entity/WebScan.entity";
 import { WebScanAlert } from "../../entity/WebScanAlert.entity";
+import { WebScanLink } from "../../entity/WebScanLink.entity";
 
 interface IScanResult {
   score: number;
@@ -45,6 +46,9 @@ const staticScriptScan = async (scan: WebScan) => {
 
     analyzeFunctions(cleanedBody, request.requestUrl, scan, request.id);
     findEmails(cleanedBody, request.requestUrl, scan, request.id);
+    if (request.responseType.startsWith("text/html")) {
+      findLinks(cleanedBody, request.requestUrl, scan, request.id);
+    }
   }
 
   return scan;
@@ -65,7 +69,7 @@ const findEmails = (
   }
 
   const emailMatches = body.match(emailRegex);
-  if (emailMatches !== null) {
+  if (emailMatches !== null && requestId !== null) {
     for (const match of emailMatches) {
       const alert = new WebScanAlert();
       alert.webScan = scan;
@@ -80,6 +84,32 @@ const findEmails = (
           ? 0
           : 2;
       scan.alerts.push(alert);
+    }
+  }
+};
+
+const findLinks = (
+  body: string,
+  url: string,
+  scan: WebScan,
+  requestId: string
+) => {
+  const aLinkRegex = /(?<=<a\s+href=["'])([^"']+)(?=["'])/gi;
+  const aLinkRegexMatches = body.match(aLinkRegex);
+
+  if (scan.links === null || scan.links === undefined) {
+    scan.links = [];
+  }
+
+  if (aLinkRegexMatches !== null && requestId !== null) {
+    for (const match of aLinkRegexMatches) {
+      const link = new WebScanLink();
+      link.webScan = scan;
+      link.url = url;
+      link.target = match;
+      link.type = "<a> href";
+      link.requestId = requestId;
+      scan.links.push(link);
     }
   }
 };
@@ -100,7 +130,7 @@ const analyzeFunctions = (
   }
 
   const evalMatches = body.match(evalRegex);
-  if (evalMatches !== null) {
+  if (evalMatches !== null && requestId !== null) {
     for (const match of evalMatches) {
       const alert = new WebScanAlert();
       alert.webScan = scan;
@@ -116,7 +146,7 @@ const analyzeFunctions = (
   }
 
   const windowLocationMatches = body.match(windowLocationRegex);
-  if (windowLocationMatches !== null) {
+  if (windowLocationMatches !== null && requestId !== null) {
     for (const match of windowLocationMatches) {
       const alert = new WebScanAlert();
       alert.webScan = scan;
@@ -132,7 +162,7 @@ const analyzeFunctions = (
   }
 
   const debuggerRegexMatches = body.match(debuggerRegex);
-  if (debuggerRegexMatches !== null) {
+  if (debuggerRegexMatches !== null && requestId !== null) {
     for (const match of debuggerRegexMatches) {
       const alert = new WebScanAlert();
       alert.webScan = scan;
@@ -340,7 +370,7 @@ const urlDeobfuscate3 = (
       const alert = new WebScanAlert();
       alert.url = url;
       alert.method = "Script Deobfuscation";
-      alert.description = `decodeURI() - hex encoded string found and decoded on round ${round}`;
+      alert.description = `decodeURIComponent() - hex encoded string found and decoded on round ${round}`;
       alert.data = body;
       alert.webScanRequestId = requestId;
       alert.suspicionLevel = 2;
