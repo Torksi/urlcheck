@@ -50,9 +50,17 @@ export class WebScanRoute extends Route {
         });
       }
 
-      const captchaRes = await axios.post(
-        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`
-      );
+      const captchaRes = await axios
+        .post(
+          `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`
+        )
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .catch((_err) => {
+          return res.status(500).send({
+            success: false,
+            message: "reCAPTCHA failed. Please try again.",
+          });
+        });
 
       if (captchaRes.status !== 200) {
         return res.status(429).send({

@@ -194,7 +194,6 @@ export class WebScanController {
       executablePath: (process.env.PUPPETEER_EXECUTABLE_PATH as string) || "",
       args: ["--disable-web-security", "--disable-features=site-per-process"],
       ignoreHTTPSErrors: true,
-      headless: false,
     });
     const page = await browser.newPage();
 
