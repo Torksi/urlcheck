@@ -36,15 +36,52 @@ const staticScriptScan = async (scan: WebScan) => {
       cleanedBody = deobf.body;
     }
 
-    analyzeFunctions(cleanedBody, request.requestUrl, scan, request.id);
-
-    const alerts = scan.alerts.filter((a) => a.webScanRequestId === request.id);
+    const alerts = (scan.alerts || []).filter(
+      (a) => a.webScanRequestId === request.id
+    );
     if (alerts.length > 0) {
       alerts[alerts.length - 1].fullyDeobfuscated = true;
     }
+
+    analyzeFunctions(cleanedBody, request.requestUrl, scan, request.id);
+    findEmails(cleanedBody, request.requestUrl, scan, request.id);
   }
 
   return scan;
+};
+
+const findEmails = (
+  body: string,
+  url: string,
+  scan: WebScan,
+  requestId: string
+) => {
+  const emailRegex =
+    // eslint-disable-next-line no-useless-escape, no-control-regex
+    /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi;
+
+  if (scan.alerts === null || scan.alerts === undefined) {
+    scan.alerts = [];
+  }
+
+  const emailMatches = body.match(emailRegex);
+  if (emailMatches !== null) {
+    for (const match of emailMatches) {
+      const alert = new WebScanAlert();
+      alert.webScan = scan;
+      alert.url = url;
+      alert.description = `Email address detected '${match}'`;
+      alert.method = "Static Script Analysis";
+      alert.data = match;
+      alert.webScanRequestId = requestId;
+      alert.suspicionLevel =
+        match.endsWith("@example.com") ||
+        match.endsWith("@example.onmicrosoft.com")
+          ? 0
+          : 2;
+      scan.alerts.push(alert);
+    }
+  }
 };
 
 const analyzeFunctions = (
@@ -56,6 +93,7 @@ const analyzeFunctions = (
   const evalRegex = /eval\s*\(\s*(['"].*?['"]|[^)]*?)\s*\)/gi;
   const windowLocationRegex =
     /window\.location.replace\s*.\s*(['"].*?['"]|[^;]*)/gi;
+  const debuggerRegex = /debugger/gi;
 
   if (scan.alerts === null || scan.alerts === undefined) {
     scan.alerts = [];
@@ -72,7 +110,7 @@ const analyzeFunctions = (
       alert.method = "Static Script Analysis";
       alert.data = match;
       alert.webScanRequestId = requestId;
-      alert.suspicionLevel = 3;
+      alert.suspicionLevel = 1;
       scan.alerts.push(alert);
     }
   }
@@ -84,11 +122,27 @@ const analyzeFunctions = (
       alert.webScan = scan;
       alert.url = url;
       alert.description =
-        "window.location - found, it might be used to redirect the user";
+        "window.location.replace - found, it might be used to redirect the user";
       alert.method = "Static Script Analysis";
       alert.data = match;
       alert.webScanRequestId = requestId;
-      alert.suspicionLevel = 2;
+      alert.suspicionLevel = 3;
+      scan.alerts.push(alert);
+    }
+  }
+
+  const debuggerRegexMatches = body.match(debuggerRegex);
+  if (debuggerRegexMatches !== null) {
+    for (const match of debuggerRegexMatches) {
+      const alert = new WebScanAlert();
+      alert.webScan = scan;
+      alert.url = url;
+      alert.description =
+        "debugger - found, it might be used to prevent reverse engineering";
+      alert.method = "Static Script Analysis";
+      alert.data = match;
+      alert.webScanRequestId = requestId;
+      alert.suspicionLevel = 3;
       scan.alerts.push(alert);
     }
   }

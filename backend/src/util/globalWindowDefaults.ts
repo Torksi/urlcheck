@@ -208,7 +208,6 @@ const globalWindowDefaults = [
   "sessionStorage",
   "window",
   "document",
-  "location",
   "top",
   "__REACT_DEVTOOLS_APPEND_COMPONENT_STACK__",
   "__REACT_DEVTOOLS_BREAK_ON_CONSOLE_ERRORS__",

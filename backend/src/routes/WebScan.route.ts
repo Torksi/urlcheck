@@ -65,6 +65,7 @@ export class WebScanRoute extends Route {
       const scan: any = await WebScanController.scan(req, url);
 
       if (!scan) {
+        console.error("scan returned undefined");
         return res.status(500).send({
           success: false,
           message:
@@ -233,9 +234,11 @@ export class WebScanRoute extends Route {
       }
 
       if (
-        ["application/javascript", "application/x-javascript"].some((r) =>
-          request.responseType.startsWith(r)
-        )
+        [
+          "application/javascript",
+          "application/x-javascript",
+          "text/javascript",
+        ].some((r) => request.responseType.startsWith(r))
       ) {
         beautified = js_beautify(request.responseBody, {});
       } else if (

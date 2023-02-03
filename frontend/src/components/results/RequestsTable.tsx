@@ -92,6 +92,7 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                         [
                           "application/javascript",
                           "application/x-javascript",
+                          "text/javascript",
                           "text/html",
                         ].some((r) => request.responseType.startsWith(r)) && (
                           <a

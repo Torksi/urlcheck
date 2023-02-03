@@ -127,6 +127,7 @@ export class WebScanController {
       "application/json",
       "text/plain",
       "application/javascript",
+      "text/javascript",
       "application/x-javascript",
       "text/csv",
       "text/xml",
@@ -147,6 +148,7 @@ export class WebScanController {
     const fqdn = await this.getFQDN(url);
 
     if (fqdn === null) {
+      console.error("fqdn check failed");
       return null;
     }
 
@@ -163,7 +165,7 @@ export class WebScanController {
     const browser = await puppeteer.launch({
       defaultViewport: { width: 1280, height: 720 },
       executablePath: (process.env.PUPPETEER_EXECUTABLE_PATH as string) || "",
-      args: ["--disable-web-security"]
+      args: ["--disable-web-security"],
     });
     const page = await browser.newPage();
 
@@ -272,6 +274,7 @@ export class WebScanController {
         waitUntil: "networkidle0",
       });
     } catch (err) {
+      console.error(err);
       return null;
     }
 

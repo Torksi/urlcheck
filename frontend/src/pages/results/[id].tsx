@@ -10,6 +10,7 @@ import useSWR from "swr";
 import ErrorScreen from "../../components/ErrorScreen";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import AlertsTable from "../../components/results/AlertsTable";
+import GlobalVariablesTable from "../../components/results/GlobalVariablesTable";
 import RedirectsTable from "../../components/results/RedirectsTable";
 import RequestsTable from "../../components/results/RequestsTable";
 import SuspicionBadge from "../../components/SuspicionBadge";
@@ -28,49 +29,51 @@ export default function ResultPage() {
   const [alertData, setAlertData] = useState<any>(null);
 
   useEffect(() => {
-    axios
-      .get(`/api/webscan/${id}`)
-      .then((res) => setRootData(res.data.data))
-      .catch((err) => {
-        return (
-          <div className="main">
-            <div className="row mt-5">
-              <div className="col-md-12">
-                <h1 className="title">
-                  <Link href="/">
-                    <span className="text-info">urlcheck</span> search engine
-                  </Link>
-                </h1>
+    if (id) {
+      axios
+        .get(`/api/webscan/${id}`)
+        .then((res) => setRootData(res.data.data))
+        .catch((err) => {
+          return (
+            <div className="main">
+              <div className="row mt-5">
+                <div className="col-md-12">
+                  <h1 className="title">
+                    <Link href="/">
+                      <span className="text-info">urlcheck</span> search engine
+                    </Link>
+                  </h1>
+                </div>
+              </div>
+              <div className="row text-center mt-4">
+                <Title pageName="Failed to load results" />
+                <ErrorScreen description="Couldn't load the scan results. They might still be in progress or removed." />
               </div>
             </div>
-            <div className="row text-center mt-4">
-              <Title pageName="Failed to load results" />
-              <ErrorScreen description="Couldn't load the scan results. They might still be in progress or removed." />
-            </div>
-          </div>
-        );
-      });
+          );
+        });
 
-    axios
-      .get(`/api/webscan/requests/${id}`)
-      .then((res) => setRequestsData(res.data.data))
-      .catch((err) => {
-        return null;
-      });
+      axios
+        .get(`/api/webscan/requests/${id}`)
+        .then((res) => setRequestsData(res.data.data))
+        .catch((err) => {
+          return null;
+        });
 
-    axios
-      .get(`/api/webscan/redirects/${id}`)
-      .then((res) => setRedirectData(res.data.data))
-      .catch((err) => {
-        return null;
-      });
+      axios
+        .get(`/api/webscan/redirects/${id}`)
+        .then((res) => setRedirectData(res.data.data))
+        .catch((err) => {
+          return null;
+        });
 
-    axios
-      .get(`/api/webscan/alerts/${id}`)
-      .then((res) => setAlertData(res.data.data))
-      .catch((err) => {
-        return null;
-      });
+      axios
+        .get(`/api/webscan/alerts/${id}`)
+        .then((res) => setAlertData(res.data.data))
+        .catch((err) => {
+          return null;
+        });
+    }
   }, [setRootData, setRequestsData, id]);
 
   const countriesList: any = [];
@@ -244,7 +247,7 @@ export default function ResultPage() {
             id="result-tabs"
             className="mb-3"
           >
-            <Tab eventKey="summary" title="Summary">
+            <Tab eventKey="summary" title="Connection Summary">
               <div className="row mt-4">
                 <div className="col-md-8">
                   <h4>IPs{requestsData ? ` (${ipList.length})` : ""}</h4>
@@ -443,6 +446,23 @@ export default function ResultPage() {
                   {redirectData && (
                     <RedirectsTable id={id} redirectData={redirectData} />
                   )}
+                </div>
+              </div>
+            </Tab>
+            <Tab eventKey="variables" title={<span>Global Variables</span>}>
+              <div className="row">
+                <div className="col-md-12">
+                  <h4>Global Variables</h4>
+                  <p>
+                    Here are some JavaScript variables that might contain
+                    interesting data.
+                  </p>
+                  {!rootData && (
+                    <div className="text-center">
+                      <LoadingSpinner />
+                    </div>
+                  )}
+                  {rootData && <GlobalVariablesTable scanData={rootData} />}
                 </div>
               </div>
             </Tab>
