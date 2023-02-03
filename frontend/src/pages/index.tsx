@@ -38,6 +38,7 @@ export default function IndexPage() {
         if (err.response && err.response.data) {
           setErrorMessage(err.response.data.message);
         } else {
+          console.error(err);
           setErrorMessage("Something went wrong. Please try again later.");
         }
       });
