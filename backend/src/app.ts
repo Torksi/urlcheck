@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import rateLimit from "express-rate-limit";
 import compression from "compression";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
@@ -46,6 +47,15 @@ app.use(TrimMiddleware);
 app.use(cors({ origin: true, credentials: true }));
 
 app.use(compression());
+
+const limiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "") || 15 * 60 * 1000,
+  max: parseInt(process.env.RATE_LIMIT_MAX || "") || 15 * 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 
 // Prevent error messages from being sent to the client and exposing stack trace
 app.use((err: any, _: Request, res: Response, next: NextFunction) => {
