@@ -2,6 +2,10 @@
 
 urlcheck is an open source alternative for urlscan.io. It browses the requested URL like any other normal user and takes screenshots of the page. It also gathers information such as network activity, contacted domains, contacted IPs, loaded resources, etc.
 
+## Live demo
+
+You can try urlcheck at [https://urlcheck.ruhis.fi](https://urlcheck.ruhis.fi)
+
 ## Support / troubleshooting
 
 ### Setting up / updating geoip database
