@@ -64,8 +64,13 @@ export class WebScanRoute extends Route {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const scan: any = await WebScanController.scan(req, url);
 
-      if (!scan) {
-        console.error("scan returned undefined");
+      if (!scan || Object.keys(scan).includes("error")) {
+        if (Object.keys(scan).includes("error")) {
+          return res.status(500).send({
+            success: false,
+            message: scan.message,
+          });
+        }
         return res.status(500).send({
           success: false,
           message:

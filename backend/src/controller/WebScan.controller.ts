@@ -16,6 +16,7 @@ import networkRequestScan from "../scan/web/networkRequestScan";
 import redirectScan from "../scan/web/redirectScan";
 import staticScriptScan from "../scan/web/staticScriptScan";
 import { WebScanAlert } from "../entity/WebScanAlert.entity";
+import { IScanError } from "../error/IScanError";
 
 export interface IExtendedIncomingMessage extends IncomingMessage {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,7 +122,10 @@ export class WebScanController {
     });
   }
 
-  public static async scan(req: Request, url: string): Promise<WebScan | null> {
+  public static async scan(
+    req: Request,
+    url: string
+  ): Promise<WebScan | IScanError | null> {
     const includeResponseTypes = [
       "text/html",
       "application/json",
@@ -135,7 +139,12 @@ export class WebScanController {
       "application/pdf",
     ];
 
+    const fqdnBlacklist = ["192.168", "127.0", "172.16", "10.0"];
+
     const webScan = new WebScan();
+
+    url = url.replace(/\.\.\//g, "/");
+    url = url.replace("file://", "http://");
 
     webScan.url = url;
     webScan.createdBy = (
@@ -148,8 +157,17 @@ export class WebScanController {
     const fqdn = await this.getFQDN(url);
 
     if (fqdn === null) {
-      console.error("fqdn check failed");
-      return null;
+      return { message: "Domain name is invalid", error: true } as IScanError;
+    }
+
+    console.log(`fqdn: ${fqdn} - url: ${url}`);
+
+    if (
+      fqdn.toLowerCase() === "localhost" ||
+      fqdnBlacklist.some((blacklisted) => fqdn.startsWith(blacklisted))
+    ) {
+      console.error("fqdn blacklist check failed");
+      return { message: "Domain name is invalid", error: true } as IScanError;
     }
 
     webScan.ip = await this.resolveIP(fqdn);
@@ -275,7 +293,10 @@ export class WebScanController {
       });
     } catch (err) {
       console.error(err);
-      return null;
+      return {
+        message: "Internal scanner issue. Please try again later.",
+        error: true,
+      } as IScanError;
     }
 
     await delay(5000);
