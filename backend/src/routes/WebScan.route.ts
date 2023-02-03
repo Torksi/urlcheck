@@ -5,6 +5,7 @@ import { js_beautify } from "js-beautify";
 import { WebScanController } from "../controller/WebScan.controller";
 import { WebScanAlert } from "../entity/WebScanAlert.entity";
 import { WebScanNetRequest } from "../entity/WebScanNetRequest.entity";
+import limiter from "../util/limiter";
 import { Route } from "./Route";
 
 export class WebScanRoute extends Route {
@@ -22,7 +23,7 @@ export class WebScanRoute extends Route {
   };
 
   registerRoutes(): void {
-    this.router.post("/", async (req, res) => {
+    this.router.post("/", limiter, async (req, res) => {
       let { url } = req.body;
       const { token } = req.body;
 

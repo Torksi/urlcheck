@@ -204,14 +204,14 @@ export default function ResultPage() {
       </div>
       <div className="row mt-4">
         <div className="col-md-6">
-          <h4>
+          <h4 style={{ lineBreak: "anywhere" }}>
             {rootData.url.replaceAll("https://", "").replaceAll("http://", "")}
           </h4>
           <p>
             <strong>IP:</strong> {rootData.ip}{" "}
             {getFlagEmoji(rootData.urlCountry)} | (AS{rootData.urlAs})
           </p>
-          <p>
+          <p style={{ lineBreak: "anywhere" }}>
             <strong>URL:</strong> {rootData.url}
           </p>
           <p>
