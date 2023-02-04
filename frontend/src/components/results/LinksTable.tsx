@@ -40,7 +40,7 @@ const LinksTable: React.FC<ComponentProps> = ({ id, linkData }) => {
                     <td>
                       <div className="btn-group float-end align-middle">
                         <a
-                          href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${link.requestId}`}
+                          href={`${process.env.NEXT_PUBLIC_API}/api/web/${id}/request/${link.requestId}`}
                           target="_blank"
                           className="btn btn-info text-white btn-sm"
                           rel="noreferrer"

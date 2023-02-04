@@ -34,7 +34,7 @@ export default function ResultPage() {
   useEffect(() => {
     if (id) {
       axios
-        .get(`/api/webscan/${id}`)
+        .get(`/api/web/${id}`)
         .then((res) => setRootData(res.data.data))
         .catch((err) => {
           return (
@@ -57,28 +57,28 @@ export default function ResultPage() {
         });
 
       axios
-        .get(`/api/webscan/requests/${id}`)
+        .get(`/api/web/requests/${id}`)
         .then((res) => setRequestsData(res.data.data))
         .catch((err) => {
           return null;
         });
 
       axios
-        .get(`/api/webscan/redirects/${id}`)
+        .get(`/api/web/redirects/${id}`)
         .then((res) => setRedirectData(res.data.data))
         .catch((err) => {
           return null;
         });
 
       axios
-        .get(`/api/webscan/alerts/${id}`)
+        .get(`/api/web/alerts/${id}`)
         .then((res) => setAlertData(res.data.data))
         .catch((err) => {
           return null;
         });
 
       axios
-        .get(`/api/webscan/links/${id}`)
+        .get(`/api/web/links/${id}`)
         .then((res) => setLinkData(res.data.data))
         .catch((err) => {
           return null;
@@ -189,7 +189,7 @@ export default function ResultPage() {
           <meta property="og:type" content="website" />
           <meta
             property="og:image"
-            content={`${process.env.NEXT_PUBLIC_API}/api/webscan/screenshot/${id}`}
+            content={`${process.env.NEXT_PUBLIC_API}/api/web/screenshot/${id}`}
           />
         </Head>
       )}
@@ -237,12 +237,12 @@ export default function ResultPage() {
         <div className="col-md-6">
           <h4>Screenshot</h4>
           <a
-            href={`${process.env.NEXT_PUBLIC_API}/api/webscan/screenshot/${id}`}
+            href={`${process.env.NEXT_PUBLIC_API}/api/web/screenshot/${id}`}
             target="_blank"
             rel="noreferrer"
           >
             <img
-              src={`${process.env.NEXT_PUBLIC_API}/api/webscan/screenshot/${id}`}
+              src={`${process.env.NEXT_PUBLIC_API}/api/web/screenshot/${id}`}
               alt={`Screenshot of ${rootData.url}`}
               className="img-fluid"
             />
