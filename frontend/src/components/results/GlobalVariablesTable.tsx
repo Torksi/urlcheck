@@ -1,7 +1,3 @@
-import dynamicSort from "../../util/dynamicSort";
-import truncate from "../../util/truncate";
-import SuspicionBadge from "../SuspicionBadge";
-
 interface ComponentProps {
   scanData: any;
 }

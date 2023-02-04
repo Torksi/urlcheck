@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { LoadingSpinner } from "./LoadingSpinner";
 
 export default function LoadingScan() {

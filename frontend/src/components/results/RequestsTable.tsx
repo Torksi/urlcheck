@@ -1,8 +1,6 @@
-import dynamicSort from "../../util/dynamicSort";
 import getFlagEmoji from "../../util/flagEmoji";
 import truncate from "../../util/truncate";
 import MethodBadge from "../MethodBadge";
-import SuspicionBadge from "../SuspicionBadge";
 
 interface ComponentProps {
   id: string | string[] | undefined;

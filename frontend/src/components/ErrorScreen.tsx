@@ -1,6 +1,3 @@
-import Head from "next/head";
-import { Dispatch, SetStateAction } from "react";
-
 interface ErrorProps {
   description: string;
 }

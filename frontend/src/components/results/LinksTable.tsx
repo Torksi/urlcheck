@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FormEvent } from "react";
 import dynamicSort from "../../util/dynamicSort";
 import truncate from "../../util/truncate";
 

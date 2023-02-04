@@ -1,13 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import axios from "axios";
 import moment from "moment";
-import { useReCaptcha } from "next-recaptcha-v3";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import useSWR from "swr";
 import ErrorScreen from "../../../components/ErrorScreen";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import AlertsTable from "../../../components/results/AlertsTable";
@@ -15,12 +13,10 @@ import GlobalVariablesTable from "../../../components/results/GlobalVariablesTab
 import LinksTable from "../../../components/results/LinksTable";
 import RedirectsTable from "../../../components/results/RedirectsTable";
 import RequestsTable from "../../../components/results/RequestsTable";
-import SuspicionBadge from "../../../components/SuspicionBadge";
 import Title from "../../../components/Title";
 import getCountry from "../../../util/countryName";
 import dynamicSort from "../../../util/dynamicSort";
 import getFlagEmoji from "../../../util/flagEmoji";
-import truncate from "../../../util/truncate";
 
 export default function ResultPage() {
   const router = useRouter();
