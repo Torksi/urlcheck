@@ -7,7 +7,6 @@ interface ComponentProps {
 }
 
 const GlobalVariablesTable: React.FC<ComponentProps> = ({ scanData }) => {
-  console.log(scanData.globalVariables);
   return (
     <div className="table-responsive">
       <table className="table table-striped">
@@ -18,14 +17,18 @@ const GlobalVariablesTable: React.FC<ComponentProps> = ({ scanData }) => {
           </tr>
         </thead>
         <tbody>
-          {
-            Object.keys(scanData.globalVariables).map((v) => {
-              return <tr key={`global-var-${v}`}>
+          {Object.keys(scanData.globalVariables).map((v) => {
+            return (
+              <tr key={`global-var-${v}`}>
                 <td>{v}</td>
-                <td><pre><code>{scanData.globalVariables[v]}</code></pre></td>
+                <td>
+                  <pre>
+                    <code>{scanData.globalVariables[v]}</code>
+                  </pre>
+                </td>
               </tr>
-            })
-          }
+            );
+          })}
         </tbody>
       </table>
     </div>
