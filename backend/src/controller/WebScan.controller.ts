@@ -418,8 +418,6 @@ export class WebScanController {
       return null;
     });
 
-    console.log("fullDom", fullDom);
-
     await browser.close();
 
     webScan.screenshot = screenshot.toString("base64");
