@@ -18,6 +18,12 @@ export class EmailScanRoute extends Route {
       async (req, res) => {
         const { token } = req.body;
 
+        if (process.env.NODE_ENV !== "development") {
+          return res
+            .status(501)
+            .send({ success: false, message: "Not implemented." });
+        }
+
         if (!req.file) {
           return res
             .status(400)

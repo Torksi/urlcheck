@@ -39,11 +39,15 @@ export class WebScanAlert extends BaseEntity {
   @Column({ default: false })
   fullyDeobfuscated: boolean;
 
-  @ManyToOne(() => WebScan, (scan) => scan.alerts)
+  @ManyToOne(() => WebScan, (scan) => scan.alerts, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "webScanId", referencedColumnName: "id" })
   webScan: WebScan;
 
-  @ManyToOne(() => WebScanNetRequest)
+  @ManyToOne(() => WebScanNetRequest, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "webScanRequestId", referencedColumnName: "id" })
   webScanRequest: WebScanNetRequest;
 

@@ -379,6 +379,16 @@ export class WebScanController {
       addGlobalVariables(vars);
     });
 
+    const fullDom = await page.evaluate(() => {
+      const dc = document as any;
+      if (dc !== null) {
+        return dc.querySelector("*").outerHTML;
+      }
+      return null;
+    });
+
+    console.log("fullDom", fullDom);
+
     await browser.close();
 
     webScan.screenshot = screenshot.toString("base64");
@@ -386,6 +396,7 @@ export class WebScanController {
     webScan.redirects = redirects;
     webScan.redirectCount = redirects.length;
     webScan.globalVariables = globalVariables;
+    webScan.fullDom = fullDom;
 
     await appDataSource.manager.save(webScan);
 

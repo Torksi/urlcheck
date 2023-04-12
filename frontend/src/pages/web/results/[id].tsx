@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import ErrorScreen from "../../../components/ErrorScreen";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import AlertsTable from "../../../components/results/AlertsTable";
@@ -26,6 +28,7 @@ export default function ResultPage() {
   const [redirectData, setRedirectData] = useState<any>(null);
   const [alertData, setAlertData] = useState<any>(null);
   const [linkData, setLinkData] = useState<any>(null);
+  const [notFound, setNotFound] = useState<boolean>(false);
 
   useEffect(() => {
     if (id) {
@@ -33,6 +36,7 @@ export default function ResultPage() {
         .get(`/api/web/${id}`)
         .then((res) => setRootData(res.data.data))
         .catch((err) => {
+          setNotFound(true);
           return (
             <div className="main">
               <div className="row mt-5">
@@ -145,6 +149,26 @@ export default function ResultPage() {
     });
   }
 
+  if (notFound) {
+    return (
+      <div className="main">
+        <div className="row mt-5">
+          <div className="col-md-12">
+            <h1 className="title">
+              <Link href="/">
+                <span className="text-info">urlcheck</span> search engine
+              </Link>
+            </h1>
+          </div>
+        </div>
+        <div className="row text-center mt-4">
+          <Title pageName="Failed to load results" />
+          <ErrorScreen description="Couldn't load the scan results. They might still be in progress or removed. Results are automatically removed after 48 hours." />
+        </div>
+      </div>
+    );
+  }
+
   if (!rootData) {
     return (
       <div className="main">
@@ -166,6 +190,11 @@ export default function ResultPage() {
       </div>
     );
   }
+
+  const expirationDate = moment().add(48, "hours");
+  const timeRemaining = moment.duration(
+    expirationDate.diff(rootData.createdAt)
+  );
 
   return (
     <div className="main">
@@ -243,6 +272,12 @@ export default function ResultPage() {
               className="img-fluid"
             />
           </a>
+        </div>
+      </div>
+      <div className="row mt-4">
+        <div className="alert alert-warning">
+          These results will be removed in about{" "}
+          {timeRemaining.asHours().toFixed(0)} hours.
         </div>
       </div>
       <div className="row mt-4">
@@ -375,6 +410,23 @@ export default function ResultPage() {
                 </div>
               </div>
             </Tab>
+            {rootData.fullDom && (
+              <Tab eventKey="fullDom" title={<span>Rendered DOM</span>}>
+                <div className="row">
+                  <div className="col-md-12">
+                    <h4>Rendered DOM</h4>
+                    <SyntaxHighlighter
+                      language="html"
+                      style={oneDark}
+                      showLineNumbers
+                    >
+                      {rootData.fullDom}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
+              </Tab>
+            )}
+
             <Tab
               eventKey="alerts"
               title={

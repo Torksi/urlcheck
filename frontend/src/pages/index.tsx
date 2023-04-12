@@ -171,7 +171,7 @@ export default function IndexPage() {
                 <div className="row">
                   {process.env.NODE_ENV !== "development" ? (
                     <div className="col-md-12">
-                      <div className="alert alert-info">
+                      <div className="alert alert-danger">
                         Email scanning is still work in progress. Check back
                         later for updates.
                       </div>

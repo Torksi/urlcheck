@@ -62,7 +62,9 @@ export class WebScanNetRequest extends BaseEntity {
   @Column({ default: false })
   failed: boolean;
 
-  @ManyToOne(() => WebScan, (scan) => scan.networkRequests)
+  @ManyToOne(() => WebScan, (scan) => scan.networkRequests, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "webScanId", referencedColumnName: "id" })
   webScan: WebScan;
 
