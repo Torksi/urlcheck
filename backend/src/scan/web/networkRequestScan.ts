@@ -9,7 +9,7 @@ const networkRequestScan = async (
   countries: string[]
 ) => {
   //TODO: HF
-  const skipGeolocating = scan.networkRequests.length > 50;
+  const skipGeolocating = scan.networkRequests.length > 250;
   for (const request of scan.networkRequests) {
     if (
       !["https://", "http://"].some((x) => request.requestUrl.startsWith(x))
