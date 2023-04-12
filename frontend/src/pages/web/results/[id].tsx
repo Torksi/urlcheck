@@ -30,6 +30,7 @@ export default function ResultPage() {
   const [alertData, setAlertData] = useState<any>(null);
   const [linkData, setLinkData] = useState<any>(null);
   const [notFound, setNotFound] = useState<boolean>(false);
+  const [showFullDOM, setShowFullDOM] = useState<boolean>(false);
 
   useEffect(() => {
     if (id) {
@@ -421,13 +422,35 @@ export default function ResultPage() {
                 <div className="row">
                   <div className="col-md-12">
                     <h4>Rendered DOM</h4>
-                    <SyntaxHighlighter
-                      language="html"
-                      style={oneDark}
-                      showLineNumbers
-                    >
-                      {rendersData.body}
-                    </SyntaxHighlighter>
+                    {!showFullDOM && (
+                      <div>
+                        <p>
+                          Loading the full code view might cause some
+                          performance issues. Click the button below to load the
+                          view.
+                        </p>
+                        <p>
+                          This code view will contain approximately{" "}
+                          {rendersData.body.split(/\r\n|\r|\n/).length} lines of
+                          code.
+                        </p>
+                        <button
+                          className="btn btn-info text-white"
+                          onClick={() => setShowFullDOM(true)}
+                        >
+                          Show Rendered DOM
+                        </button>
+                      </div>
+                    )}
+                    {showFullDOM && (
+                      <SyntaxHighlighter
+                        language="html"
+                        style={oneDark}
+                        showLineNumbers
+                      >
+                        {rendersData.body}
+                      </SyntaxHighlighter>
+                    )}
                   </div>
                 </div>
               </Tab>
