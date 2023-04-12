@@ -169,6 +169,10 @@ export class WebScanController {
       "0.0.0.0"
     ).toString();
 
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      return { message: "URL is invalid", error: true } as IScanError;
+    }
+
     const fqdn = await this.getFQDN(url);
 
     if (
@@ -311,7 +315,34 @@ export class WebScanController {
         waitUntil: "networkidle0",
       });
     } catch (err) {
+      const message = err.message;
+
+      if (message.startsWith("net::ERR_NAME_NOT_RESOLVED")) {
+        return {
+          message: "Domain name could not be resolved",
+          error: true,
+        } as IScanError;
+      } else if (message.startsWith("net::ERR_CONNECTION_REFUSED")) {
+        return {
+          message: "Connection to the website was refused",
+          error: true,
+        } as IScanError;
+      } else if (message.startsWith("net::ERR_CONNECTION_TIMED_OUT")) {
+        return {
+          message: "Connection to the website was timed out",
+          error: true,
+        } as IScanError;
+      } else if (message.startsWith("Navigation timeout of")) {
+        return {
+          message: "Connection to the website was timed out",
+          error: true,
+        } as IScanError;
+      }
+
       console.error(err);
+      console.log("--------------------");
+      console.log("Error while scanning: " + url);
+      console.log("Failed with unhandled error: " + message);
       return {
         message:
           "Something went wrong. Make sure the URL is valid and try again later.",
