@@ -5,7 +5,7 @@ const SuspicionBadge = ({ lvl }: { lvl: number }) => {
     return <span className="badge text-bg-blue badge-sm">Low</span>;
   } else if (lvl === 2) {
     return (
-      <span className="badge text-bg-info text-white badge-sm">Medium</span>
+      <span className="badge text-bg-warning text-white badge-sm">Medium</span>
     );
   } else if (lvl === 3) {
     return <span className="badge text-bg-danger badge-sm">High</span>;

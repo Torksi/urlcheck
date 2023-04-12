@@ -1,8 +1,6 @@
-import dynamicSort from "../../util/dynamicSort";
 import getFlagEmoji from "../../util/flagEmoji";
 import truncate from "../../util/truncate";
 import MethodBadge from "../MethodBadge";
-import SuspicionBadge from "../SuspicionBadge";
 
 interface ComponentProps {
   id: string | string[] | undefined;
@@ -70,7 +68,7 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                   <td>
                     <div className="btn-group float-end align-middle">
                       <a
-                        href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${request.id}`}
+                        href={`${process.env.NEXT_PUBLIC_API}/api/web/${id}/request/${request.id}`}
                         target="_blank"
                         className="btn btn-info text-white btn-sm"
                         rel="noreferrer"
@@ -82,7 +80,7 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                       {request.responseBody &&
                         request.responseBody.length > 0 && (
                           <a
-                            href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${request.id}`}
+                            href={`${process.env.NEXT_PUBLIC_API}/api/web/${id}/request/${request.id}`}
                             target="_blank"
                             className="btn btn-primary btn-sm"
                             rel="noreferrer"
@@ -101,7 +99,7 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                           "text/html",
                         ].some((r) => request.responseType.startsWith(r)) && (
                           <a
-                            href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${request.id}/beautify`}
+                            href={`${process.env.NEXT_PUBLIC_API}/api/web/${id}/request/${request.id}/beautify`}
                             target="_blank"
                             className="btn btn-success btn-sm"
                             rel="noreferrer"

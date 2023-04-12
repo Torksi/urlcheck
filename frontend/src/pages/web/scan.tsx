@@ -32,7 +32,7 @@ export default function ScanWebPage() {
       setScanStatus(1);
 
       axios
-        .post("/api/webscan", { url: search || urlQuery, token })
+        .post("/api/web", { url: search || urlQuery, token })
         .then((res) => {
           setSearchText("");
           router.push(`/web/results/${res.data.id}`);

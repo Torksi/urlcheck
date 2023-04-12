@@ -27,14 +27,18 @@ export class WebScanLink extends BaseEntity {
   @Column()
   webScanId: string;
 
-  @ManyToOne(() => WebScan, (scan) => scan.links)
+  @ManyToOne(() => WebScan, (scan) => scan.links, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "webScanId", referencedColumnName: "id" })
   webScan: WebScan;
 
   @Column()
   requestId: string;
 
-  @ManyToOne(() => WebScanNetRequest)
+  @ManyToOne(() => WebScanNetRequest, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "requestId", referencedColumnName: "id" })
   request: WebScanNetRequest;
 

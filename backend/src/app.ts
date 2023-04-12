@@ -6,6 +6,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import TrimMiddleware from "./middleware/TrimMiddleware";
 import { WebScanRoute } from "./routes/WebScan.route";
+import { EmailScanRoute } from "./routes/EmailScan.route";
 
 const app = express();
 
@@ -56,7 +57,8 @@ app.use((err: any, _: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-app.use("/api/webscan", new WebScanRoute().getRouter());
+app.use("/api/web", new WebScanRoute().getRouter());
+app.use("/api/email", new EmailScanRoute().getRouter());
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use(function (_, res, _next) {

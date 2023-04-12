@@ -46,6 +46,7 @@ export class WebScan extends BaseEntity {
     {
       cascade: true,
       eager: false,
+      onDelete: "CASCADE",
     }
   )
   networkRequests: WebScanNetRequest[];
@@ -53,18 +54,21 @@ export class WebScan extends BaseEntity {
   @OneToMany(() => WebScanRedirect, (redirect) => redirect.webScan, {
     cascade: true,
     eager: false,
+    onDelete: "CASCADE",
   })
   redirects: WebScanRedirect[];
 
   @OneToMany(() => WebScanAlert, (alert) => alert.webScan, {
     cascade: true,
     eager: false,
+    onDelete: "CASCADE",
   })
   alerts: WebScanAlert[];
 
   @OneToMany(() => WebScanLink, (link) => link.webScan, {
     cascade: true,
     eager: false,
+    onDelete: "CASCADE",
   })
   links: WebScanLink[];
 
@@ -88,6 +92,9 @@ export class WebScan extends BaseEntity {
 
   @Column({ type: "jsonb", default: {} })
   globalVariables: Record<string, string>;
+
+  @Column({ type: "text", default: "" })
+  fullDom: string;
 
   @CreateDateColumn({ type: "timestamptz" })
   createdAt: Date;

@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import axios from "axios";
 import moment from "moment";
-import { useReCaptcha } from "next-recaptcha-v3";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import useSWR from "swr";
+import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import ErrorScreen from "../../../components/ErrorScreen";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import AlertsTable from "../../../components/results/AlertsTable";
@@ -15,12 +15,10 @@ import GlobalVariablesTable from "../../../components/results/GlobalVariablesTab
 import LinksTable from "../../../components/results/LinksTable";
 import RedirectsTable from "../../../components/results/RedirectsTable";
 import RequestsTable from "../../../components/results/RequestsTable";
-import SuspicionBadge from "../../../components/SuspicionBadge";
 import Title from "../../../components/Title";
 import getCountry from "../../../util/countryName";
 import dynamicSort from "../../../util/dynamicSort";
 import getFlagEmoji from "../../../util/flagEmoji";
-import truncate from "../../../util/truncate";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -30,13 +28,15 @@ export default function ResultPage() {
   const [redirectData, setRedirectData] = useState<any>(null);
   const [alertData, setAlertData] = useState<any>(null);
   const [linkData, setLinkData] = useState<any>(null);
+  const [notFound, setNotFound] = useState<boolean>(false);
 
   useEffect(() => {
     if (id) {
       axios
-        .get(`/api/webscan/${id}`)
+        .get(`/api/web/${id}`)
         .then((res) => setRootData(res.data.data))
         .catch((err) => {
+          setNotFound(true);
           return (
             <div className="main">
               <div className="row mt-5">
@@ -57,28 +57,28 @@ export default function ResultPage() {
         });
 
       axios
-        .get(`/api/webscan/requests/${id}`)
+        .get(`/api/web/requests/${id}`)
         .then((res) => setRequestsData(res.data.data))
         .catch((err) => {
           return null;
         });
 
       axios
-        .get(`/api/webscan/redirects/${id}`)
+        .get(`/api/web/redirects/${id}`)
         .then((res) => setRedirectData(res.data.data))
         .catch((err) => {
           return null;
         });
 
       axios
-        .get(`/api/webscan/alerts/${id}`)
+        .get(`/api/web/alerts/${id}`)
         .then((res) => setAlertData(res.data.data))
         .catch((err) => {
           return null;
         });
 
       axios
-        .get(`/api/webscan/links/${id}`)
+        .get(`/api/web/links/${id}`)
         .then((res) => setLinkData(res.data.data))
         .catch((err) => {
           return null;
@@ -149,6 +149,26 @@ export default function ResultPage() {
     });
   }
 
+  if (notFound) {
+    return (
+      <div className="main">
+        <div className="row mt-5">
+          <div className="col-md-12">
+            <h1 className="title">
+              <Link href="/">
+                <span className="text-info">urlcheck</span> search engine
+              </Link>
+            </h1>
+          </div>
+        </div>
+        <div className="row text-center mt-4">
+          <Title pageName="Failed to load results" />
+          <ErrorScreen description="Couldn't load the scan results. They might still be in progress or removed. Results are automatically removed after 48 hours." />
+        </div>
+      </div>
+    );
+  }
+
   if (!rootData) {
     return (
       <div className="main">
@@ -171,6 +191,11 @@ export default function ResultPage() {
     );
   }
 
+  const expirationDate = moment().add(48, "hours");
+  const timeRemaining = moment.duration(
+    expirationDate.diff(rootData.createdAt)
+  );
+
   return (
     <div className="main">
       <Title
@@ -189,7 +214,7 @@ export default function ResultPage() {
           <meta property="og:type" content="website" />
           <meta
             property="og:image"
-            content={`${process.env.NEXT_PUBLIC_API}/api/webscan/screenshot/${id}`}
+            content={`${process.env.NEXT_PUBLIC_API}/api/web/screenshot/${id}`}
           />
         </Head>
       )}
@@ -237,16 +262,22 @@ export default function ResultPage() {
         <div className="col-md-6">
           <h4>Screenshot</h4>
           <a
-            href={`${process.env.NEXT_PUBLIC_API}/api/webscan/screenshot/${id}`}
+            href={`${process.env.NEXT_PUBLIC_API}/api/web/screenshot/${id}`}
             target="_blank"
             rel="noreferrer"
           >
             <img
-              src={`${process.env.NEXT_PUBLIC_API}/api/webscan/screenshot/${id}`}
+              src={`${process.env.NEXT_PUBLIC_API}/api/web/screenshot/${id}`}
               alt={`Screenshot of ${rootData.url}`}
               className="img-fluid"
             />
           </a>
+        </div>
+      </div>
+      <div className="row mt-4">
+        <div className="alert alert-warning">
+          These results will be removed in about{" "}
+          {timeRemaining.asHours().toFixed(0)} hours.
         </div>
       </div>
       <div className="row mt-4">
@@ -379,6 +410,23 @@ export default function ResultPage() {
                 </div>
               </div>
             </Tab>
+            {rootData.fullDom && (
+              <Tab eventKey="fullDom" title={<span>Rendered DOM</span>}>
+                <div className="row">
+                  <div className="col-md-12">
+                    <h4>Rendered DOM</h4>
+                    <SyntaxHighlighter
+                      language="html"
+                      style={oneDark}
+                      showLineNumbers
+                    >
+                      {rootData.fullDom}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
+              </Tab>
+            )}
+
             <Tab
               eventKey="alerts"
               title={

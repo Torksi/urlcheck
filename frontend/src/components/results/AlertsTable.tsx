@@ -49,7 +49,7 @@ const AlertsTable: React.FC<ComponentProps> = ({ id, alertData }) => {
                     <td>
                       <div className="btn-group float-end align-middle">
                         <a
-                          href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/alert/${alert.id}`}
+                          href={`${process.env.NEXT_PUBLIC_API}/api/web/${id}/alert/${alert.id}`}
                           target="_blank"
                           className="btn btn-danger text-white btn-sm"
                           rel="noreferrer"
@@ -59,7 +59,7 @@ const AlertsTable: React.FC<ComponentProps> = ({ id, alertData }) => {
                           <i className="bi-search"></i>
                         </a>
                         <a
-                          href={`${process.env.NEXT_PUBLIC_API}/api/webscan/${id}/request/${alert.webScanRequestId}/beautify`}
+                          href={`${process.env.NEXT_PUBLIC_API}/api/web/${id}/request/${alert.webScanRequestId}/beautify`}
                           target="_blank"
                           className="btn btn-info text-white btn-sm"
                           rel="noreferrer"
