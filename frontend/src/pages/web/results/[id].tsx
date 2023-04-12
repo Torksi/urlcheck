@@ -191,10 +191,8 @@ export default function ResultPage() {
     );
   }
 
-  const expirationDate = moment().add(48, "hours");
-  const timeRemaining = moment.duration(
-    expirationDate.diff(rootData.createdAt)
-  );
+  const expirationDate = moment(rootData.createdAt).add(48, "hours");
+  const timeRemaining = moment.duration(expirationDate.diff(moment()));
 
   return (
     <div className="main">
