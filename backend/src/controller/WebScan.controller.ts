@@ -32,7 +32,23 @@ export class WebScanController {
    */
   public static async getById(id: string): Promise<WebScan | null> {
     try {
-      return await appDataSource.getRepository(WebScan).findOneBy({ id });
+      const result = await appDataSource
+        .getRepository(WebScan)
+        .find({ where: { id } });
+      if (!result) return null;
+      return result[0];
+    } catch (_err) {
+      return null;
+    }
+  }
+
+  public static async getScreenshotById(id: string): Promise<WebScan | null> {
+    try {
+      const result = await appDataSource
+        .getRepository(WebScan)
+        .find({ where: { id }, select: ["id", "screenshot"] });
+      if (!result) return null;
+      return result[0];
     } catch (_err) {
       return null;
     }
@@ -373,7 +389,7 @@ export class WebScanController {
 
     await delay(5000);
 
-    const screenshot = await page.screenshot();
+    const screenshot = await page.screenshot({ quality: 75, type: "jpeg" });
 
     let globalVariables = {};
 
@@ -418,9 +434,15 @@ export class WebScanController {
         // @ts-ignore
         if (!defs.includes(key)) {
           try {
-            vars[key] = JSON.stringify(window[key], refReplacer())
+            let val = JSON.stringify(window[key], refReplacer())
               .replaceAll("\u0000", "")
               .replaceAll("\x00", "");
+
+            if (val.length > 75) {
+              val = val.substring(0, 75) + "...";
+            }
+
+            vars[key] = val;
           } catch (err) {
             //
           }

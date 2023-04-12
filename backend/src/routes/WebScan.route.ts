@@ -103,11 +103,6 @@ export class WebScanRoute extends Route {
       results.screenshot = "";
       results.createdBy = "";
 
-      //TODO: HF
-      if (Object.keys(results.globalVariables).length > 30) {
-        results.globalVariables = {};
-      }
-
       return res.send({ success: true, data: results });
     });
 
@@ -184,7 +179,7 @@ export class WebScanRoute extends Route {
     this.router.get("/screenshot/:id", async (req, res) => {
       const { id } = req.params;
 
-      const results = await WebScanController.getById(id);
+      const results = await WebScanController.getScreenshotById(id);
 
       if (!results) {
         return res
@@ -195,7 +190,7 @@ export class WebScanRoute extends Route {
       const image = Buffer.from(results.screenshot, "base64");
 
       res.writeHead(200, {
-        "Content-Type": "image/png",
+        "Content-Type": "image/jpeg",
         "Content-Length": image.length,
       });
 
