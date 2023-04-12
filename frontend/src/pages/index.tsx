@@ -228,17 +228,47 @@ export default function IndexPage() {
         <hr />
 
         <div className="row">
-          <div className="col-md-12">
+          <div className="col-md-6">
             <h2 className="subtitle">About</h2>
+          </div>
+          <div className="col-md-6">
+            <h2 className="subtitle">Privacy</h2>
           </div>
         </div>
         <div className="row">
-          <div className="col-md-12">
+          <div className="col-md-6">
             <p>
-              <strong>urlcheck</strong> is a tool to scan suspicious links. It
-              browses the given URL like any normal user would. It then gives
-              you a report of what it found including a screenshot, list of
-              network requests and other useful information.
+              <strong>urlcheck</strong> is a powerful tool designed to detect
+              potentially harmful links and websites. It operates by simulating
+              the browsing behavior of a typical user, scanning the given URL
+              for any suspicious activities or signs of malicious intent. Once
+              the scan is complete, it generates a comprehensive report that
+              includes a detailed list of network requests, a screenshot of the
+              webpage, and other relevant information. It&apos;s particularly
+              useful for conducting investigations into possible phishing
+              websites.
+            </p>
+          </div>
+          <div className="col-md-6">
+            <p>
+              Our top priority is to safeguard your privacy when you use our
+              scanning service. When you perform a scan, we only store your IP
+              address and country based on your IP address. We use this data
+              exclusively to provide you with the scanning service you
+              requested, and we do not share it with any third parties.
+              Additionally, we automatically delete all scans and associated
+              data after 48 hours. This ensures that your personal information
+              is kept safe and secure, and that we do not retain it any longer
+              than necessary. If you have any more questions, please{" "}
+              <a
+                className="text-info"
+                href="https://ruhis.fi/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                contact us
+              </a>
+              .
             </p>
           </div>
         </div>
