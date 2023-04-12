@@ -10,6 +10,7 @@ import { WebScanAlert } from "./WebScanAlert.entity";
 import { WebScanLink } from "./WebScanLink.entity";
 import { WebScanNetRequest } from "./WebScanNetRequest.entity";
 import { WebScanRedirect } from "./WebScanRedirect.entity";
+import { WebScanRender } from "./WebScanRender.entity";
 
 @Entity({ name: "web_scans" })
 export class WebScan extends BaseEntity {
@@ -72,6 +73,13 @@ export class WebScan extends BaseEntity {
   })
   links: WebScanLink[];
 
+  @OneToMany(() => WebScanRender, (render) => render.webScan, {
+    cascade: true,
+    eager: false,
+    onDelete: "CASCADE",
+  })
+  fullDom: WebScanRender[];
+
   @Column({ type: "text" })
   screenshot: string;
 
@@ -92,9 +100,6 @@ export class WebScan extends BaseEntity {
 
   @Column({ type: "jsonb", default: {} })
   globalVariables: Record<string, string>;
-
-  @Column({ type: "text", default: "" })
-  fullDom: string;
 
   @CreateDateColumn({ type: "timestamptz" })
   createdAt: Date;

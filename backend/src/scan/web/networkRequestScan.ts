@@ -8,10 +8,22 @@ const networkRequestScan = async (
   ips: string[],
   countries: string[]
 ) => {
+  //TODO: HF
+  const skipGeolocating = scan.networkRequests.length > 50;
   for (const request of scan.networkRequests) {
     if (
       !["https://", "http://"].some((x) => request.requestUrl.startsWith(x))
     ) {
+      request.failed = true;
+      request.geoCity = "N/A";
+      request.geoCountry = "XX";
+      request.geoAs = "N/A";
+      request.geoIp = "N/A";
+      continue;
+    }
+
+    //TODO: HF
+    if (skipGeolocating) {
       request.failed = true;
       request.geoCity = "N/A";
       request.geoCountry = "XX";

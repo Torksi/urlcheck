@@ -18,6 +18,7 @@ import staticScriptScan from "../scan/web/staticScriptScan";
 import { WebScanAlert } from "../entity/WebScanAlert.entity";
 import { IScanError } from "../error/IScanError";
 import { WebScanLink } from "../entity/WebScanLink.entity";
+import { WebScanRender } from "../entity/WebScanRender.entity";
 
 export interface IExtendedIncomingMessage extends IncomingMessage {
   body: any;
@@ -68,6 +69,24 @@ export class WebScanController {
         .getRepository(WebScan)
         .findOne({ where: { id }, relations: ["alerts"] });
       return scan?.alerts.sort(dynamicSort("createdAt")) || null;
+    } catch (_err) {
+      return null;
+    }
+  }
+
+  /**
+   * Get renders associated with webscan
+   * @param {string} id - webscan id
+   * @returns An array of WebScanRender objects.
+   */
+  public static async getRendersById(
+    id: string
+  ): Promise<WebScanRender[] | null> {
+    try {
+      const scan = await appDataSource
+        .getRepository(WebScan)
+        .findOne({ where: { id }, relations: ["fullDom"] });
+      return scan?.fullDom.sort(dynamicSort("createdAt")) || null;
     } catch (_err) {
       return null;
     }
@@ -147,8 +166,9 @@ export class WebScanController {
       "text/html",
       "application/json",
       "text/plain",
-      "application/javascript",
-      "text/javascript",
+      //TODO: HF
+      //"application/javascript",
+      //"text/javascript",
       //"application/x-javascript",
       "text/csv",
       "text/xml",
@@ -264,6 +284,10 @@ export class WebScanController {
               .replaceAll("\u0000", "")
               .replaceAll("\x00", "");
           } else {
+            responseBody = null;
+          }
+
+          if (responseSize > 1000000) {
             responseBody = null;
           }
 
@@ -425,7 +449,11 @@ export class WebScanController {
     webScan.redirects = redirects;
     webScan.redirectCount = redirects.length;
     webScan.globalVariables = globalVariables;
-    webScan.fullDom = fullDom;
+
+    const fd = new WebScanRender();
+    fd.body = fullDom;
+
+    webScan.fullDom = [fd];
 
     await appDataSource.manager.save(webScan);
 

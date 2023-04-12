@@ -103,6 +103,11 @@ export class WebScanRoute extends Route {
       results.screenshot = "";
       results.createdBy = "";
 
+      //TODO: HF
+      if (Object.keys(results.globalVariables).length > 30) {
+        results.globalVariables = {};
+      }
+
       return res.send({ success: true, data: results });
     });
 
@@ -152,6 +157,20 @@ export class WebScanRoute extends Route {
       const { id } = req.params;
 
       const results: any = await WebScanController.getAlertsById(id);
+
+      if (!results) {
+        return res
+          .status(404)
+          .send({ success: false, message: "Scan not found" });
+      }
+
+      return res.send({ success: true, data: results });
+    });
+
+    this.router.get("/renders/:id", async (req, res) => {
+      const { id } = req.params;
+
+      const results: any = await WebScanController.getRendersById(id);
 
       if (!results) {
         return res
