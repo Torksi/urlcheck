@@ -64,6 +64,7 @@ export class WebScanNetRequest extends BaseEntity {
 
   @ManyToOne(() => WebScan, (scan) => scan.networkRequests, {
     onDelete: "CASCADE",
+    eager: false,
   })
   @JoinColumn({ name: "webScanId", referencedColumnName: "id" })
   webScan: WebScan;

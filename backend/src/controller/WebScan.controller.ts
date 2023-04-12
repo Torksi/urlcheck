@@ -264,13 +264,13 @@ export class WebScanController {
         .then((response: IExtendedIncomingMessage) => {
           const statusCode = response.statusCode;
           const requestUrl = request.url().replace("\u0000", "");
-          const requestHeaders = JSON.parse(
+          /*const requestHeaders = JSON.parse(
             JSON.stringify(request.headers()).replace("\u0000", "")
-          );
+          );*/
           const requestMethod = request.method().replace("\u0000", "");
-          const requestPostData = (request.postData() || "")
+          /*const requestPostData = (request.postData() || "")
             .replaceAll("\u0000", "")
-            .replaceAll("\x00", "");
+            .replaceAll("\x00", "");*/
           const responseHeaders = JSON.parse(
             JSON.stringify(response.headers).replace("\u0000", "")
           );
@@ -298,9 +298,9 @@ export class WebScanController {
             statusCode,
             requestUrl,
             requestMethod,
-            requestHeaders,
-            requestPostData,
-            responseHeaders,
+            requestHeaders: null,
+            requestPostData: null,
+            responseHeaders: null,
             responseSize,
             responseType: contentType,
             responseBody,
