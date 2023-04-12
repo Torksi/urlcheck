@@ -230,13 +230,6 @@ export default function IndexPage() {
         <div className="row">
           <div className="col-md-6">
             <h2 className="subtitle">About</h2>
-          </div>
-          <div className="col-md-6">
-            <h2 className="subtitle">Privacy</h2>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6">
             <p>
               <strong>urlcheck</strong> is a powerful tool designed to detect
               potentially harmful links and websites. It operates by simulating
@@ -250,6 +243,7 @@ export default function IndexPage() {
             </p>
           </div>
           <div className="col-md-6">
+            <h2 className="subtitle">Privacy</h2>
             <p>
               Our top priority is to safeguard your privacy when you use our
               scanning service. When you perform a scan, we only store your IP
