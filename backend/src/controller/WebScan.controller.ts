@@ -291,6 +291,9 @@ export class WebScanController {
             responseBody = null;
           }
 
+          // TODO: HF
+          responseBody = null;
+
           result.push({
             statusCode,
             requestUrl,
