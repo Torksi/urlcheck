@@ -293,7 +293,7 @@ export class WebScanController {
             statusCode,
             requestUrl,
             requestMethod,
-            responseHeaders: null,
+            responseHeaders: {},
             responseSize,
             responseType: contentType,
             responseBody,
