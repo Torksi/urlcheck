@@ -24,12 +24,6 @@ export class WebScanNetRequest extends BaseEntity {
   requestMethod: string;
 
   @Column({ type: "jsonb" })
-  requestHeaders: Record<string, string>;
-
-  @Column({ default: null })
-  requestPostData: string;
-
-  @Column({ type: "jsonb" })
   responseHeaders: Record<string, string>;
 
   @Column({ default: null })
