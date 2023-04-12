@@ -26,6 +26,7 @@ export default function ResultPage() {
   const [rootData, setRootData] = useState<any>(null);
   const [requestsData, setRequestsData] = useState<any>(null);
   const [redirectData, setRedirectData] = useState<any>(null);
+  const [rendersData, setRendersData] = useState<any>(null);
   const [alertData, setAlertData] = useState<any>(null);
   const [linkData, setLinkData] = useState<any>(null);
   const [notFound, setNotFound] = useState<boolean>(false);
@@ -80,6 +81,13 @@ export default function ResultPage() {
       axios
         .get(`/api/web/links/${id}`)
         .then((res) => setLinkData(res.data.data))
+        .catch((err) => {
+          return null;
+        });
+
+      axios
+        .get(`/api/web/renders/${id}`)
+        .then((res) => setRendersData(res.data.data))
         .catch((err) => {
           return null;
         });
@@ -408,7 +416,7 @@ export default function ResultPage() {
                 </div>
               </div>
             </Tab>
-            {rootData.fullDom && (
+            {rendersData && rendersData.body && (
               <Tab eventKey="fullDom" title={<span>Rendered DOM</span>}>
                 <div className="row">
                   <div className="col-md-12">
@@ -418,7 +426,7 @@ export default function ResultPage() {
                       style={oneDark}
                       showLineNumbers
                     >
-                      {rootData.fullDom}
+                      {rendersData.body}
                     </SyntaxHighlighter>
                   </div>
                 </div>
@@ -534,7 +542,8 @@ export default function ResultPage() {
                   <h4>Global Variables</h4>
                   <p>
                     Here are some JavaScript variables that might contain
-                    interesting data.
+                    interesting data. Longer values have been shortened for
+                    performance reasons.
                   </p>
                   {!rootData && (
                     <div className="text-center">

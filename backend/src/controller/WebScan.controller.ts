@@ -308,7 +308,7 @@ export class WebScanController {
           }
 
           // TODO: HF
-          responseBody = null;
+          //responseBody = null;
 
           result.push({
             statusCode,

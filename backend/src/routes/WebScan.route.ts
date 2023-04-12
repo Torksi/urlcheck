@@ -173,7 +173,7 @@ export class WebScanRoute extends Route {
           .send({ success: false, message: "Scan not found" });
       }
 
-      return res.send({ success: true, data: results });
+      return res.send({ success: true, data: results[0] });
     });
 
     this.router.get("/screenshot/:id", async (req, res) => {
