@@ -44,9 +44,9 @@ const staticScriptScan = async (scan: WebScan) => {
       alerts[alerts.length - 1].fullyDeobfuscated = true;
     }
 
-    analyzeFunctions(cleanedBody, request.requestUrl, scan, request.id);
-    findEmails(cleanedBody, request.requestUrl, scan, request.id);
     if (request.responseType.startsWith("text/html")) {
+      findEmails(cleanedBody, request.requestUrl, scan, request.id);
+      analyzeFunctions(cleanedBody, request.requestUrl, scan, request.id);
       findLinks(cleanedBody, request.requestUrl, scan, request.id);
     }
   }
