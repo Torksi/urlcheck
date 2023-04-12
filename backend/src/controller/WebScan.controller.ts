@@ -66,10 +66,11 @@ export class WebScanController {
     id: string
   ): Promise<WebScanAlert[] | null> {
     try {
-      const scan = await appDataSource
-        .getRepository(WebScan)
-        .findOne({ where: { id }, relations: ["alerts"] });
-      return scan?.alerts.sort(dynamicSort("createdAt")) || null;
+      const results = await appDataSource
+        .getRepository(WebScanAlert)
+        .find({ where: { webScanId: id } });
+      if (!results) return null;
+      return results.sort(dynamicSort("order")) || null;
     } catch (_err) {
       return null;
     }
@@ -84,10 +85,11 @@ export class WebScanController {
     id: string
   ): Promise<WebScanRender[] | null> {
     try {
-      const scan = await appDataSource
-        .getRepository(WebScan)
-        .findOne({ where: { id }, relations: ["fullDom"] });
-      return scan?.fullDom.sort(dynamicSort("createdAt")) || null;
+      const results = await appDataSource
+        .getRepository(WebScanRender)
+        .find({ where: { webScanId: id } });
+      if (!results) return null;
+      return results.sort(dynamicSort("order")) || null;
     } catch (_err) {
       return null;
     }
@@ -100,10 +102,11 @@ export class WebScanController {
    */
   public static async getLinksById(id: string): Promise<WebScanLink[] | null> {
     try {
-      const scan = await appDataSource
-        .getRepository(WebScan)
-        .findOne({ where: { id }, relations: ["links"] });
-      return scan?.links.sort(dynamicSort("target")) || null;
+      const results = await appDataSource
+        .getRepository(WebScanLink)
+        .find({ where: { webScanId: id } });
+      if (!results) return null;
+      return results.sort(dynamicSort("order")) || null;
     } catch (_err) {
       return null;
     }
@@ -118,10 +121,11 @@ export class WebScanController {
     id: string
   ): Promise<WebScanRedirect[] | null> {
     try {
-      const scan = await appDataSource
-        .getRepository(WebScan)
-        .findOne({ where: { id }, relations: ["redirects"] });
-      return scan?.redirects.sort(dynamicSort("order")) || null;
+      const results = await appDataSource
+        .getRepository(WebScanRedirect)
+        .find({ where: { webScanId: id } });
+      if (!results) return null;
+      return results.sort(dynamicSort("order")) || null;
     } catch (_err) {
       return null;
     }
