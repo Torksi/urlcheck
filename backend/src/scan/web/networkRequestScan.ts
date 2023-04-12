@@ -24,7 +24,7 @@ const networkRequestScan = async (
 
     //TODO: HF
     if (skipGeolocating) {
-      request.failed = true;
+      request.failed = false;
       request.geoCity = "N/A";
       request.geoCountry = "XX";
       request.geoAs = "N/A";

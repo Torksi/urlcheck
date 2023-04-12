@@ -47,10 +47,11 @@ export class WebScanController {
     id: string
   ): Promise<WebScanNetRequest[] | null> {
     try {
-      const scan = await appDataSource
-        .getRepository(WebScan)
-        .findOne({ where: { id }, relations: ["networkRequests"] });
-      return scan?.networkRequests.sort(dynamicSort("order")) || null;
+      const results = await appDataSource
+        .getRepository(WebScanNetRequest)
+        .find({ where: { webScanId: id } });
+      if (!results) return null;
+      return results.sort(dynamicSort("order")) || null;
     } catch (_err) {
       return null;
     }
