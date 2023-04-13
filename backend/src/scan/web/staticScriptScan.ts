@@ -71,7 +71,6 @@ const verifyIntegrity = async (
 
   const fileName = request.requestUrl.split("/");
 
-  console.log("testing for", fileName[fileName.length - 1]);
   if (
     checksums[fileName[fileName.length - 1]] &&
     checksums[fileName[fileName.length - 1]] === md5(body)
