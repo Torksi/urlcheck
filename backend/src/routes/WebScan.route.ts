@@ -64,10 +64,17 @@ export class WebScanRoute extends Route {
         });
 
       if (captchaRes.status !== 200) {
-        return res.status(429).send({
-          success: false,
-          message: "reCAPTCHA failed. Are you a human?",
-        });
+        try {
+          return res.status(429).send({
+            success: false,
+            message: "reCAPTCHA failed. Are you a human?",
+          });
+        } catch (err) {
+          return res.send({
+            success: false,
+            message: "reCAPTCHA failed. Are you a human?",
+          });
+        }
       }
 
       const scan: any = await WebScanController.scan(req, url);

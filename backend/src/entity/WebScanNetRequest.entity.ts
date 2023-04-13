@@ -56,6 +56,9 @@ export class WebScanNetRequest extends BaseEntity {
   @Column({ default: false })
   failed: boolean;
 
+  @Column({ default: false })
+  integrity: boolean;
+
   @ManyToOne(() => WebScan, (scan) => scan.networkRequests, {
     onDelete: "CASCADE",
     eager: false,

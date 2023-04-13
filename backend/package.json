@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -e ts --exec ts-node src/server.ts",
+    "dev": "nodemon -e ts --exec ts-node src/server.ts --max-old-space-size 4096",
     "start": "node --max-old-space-size=8192 ./build/server.js",
     "build": "tsc --build .",
     "docker:build": "docker build . -t ruhisfi/urlcheck-backend"

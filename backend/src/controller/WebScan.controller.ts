@@ -188,8 +188,8 @@ export class WebScanController {
       "application/json",
       "text/plain",
       //TODO: HF
-      //"application/javascript",
-      //"text/javascript",
+      "application/javascript",
+      "text/javascript",
       //"application/x-javascript",
       "text/csv",
       "text/xml",

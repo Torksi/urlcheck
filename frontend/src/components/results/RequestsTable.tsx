@@ -37,7 +37,13 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                     {request.failed && !restOfUrl.startsWith("data:") && (
                       <i
                         title="Request failed"
-                        className="bi bi-exclamation-triangle-fill text-danger me-3"
+                        className="bi bi-exclamation-triangle-fill text-danger me-2"
+                      ></i>
+                    )}
+                    {request.integrity && (
+                      <i
+                        title="Integity Verified (Hash)"
+                        className="bi bi-file-earmark-check-fill text-info me-2"
                       ></i>
                     )}
                     {restOfUrl.startsWith("data:")

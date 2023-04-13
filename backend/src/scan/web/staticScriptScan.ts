@@ -1,6 +1,9 @@
 import { WebScan } from "../../entity/WebScan.entity";
 import { WebScanAlert } from "../../entity/WebScanAlert.entity";
 import { WebScanLink } from "../../entity/WebScanLink.entity";
+import { WebScanNetRequest } from "../../entity/WebScanNetRequest.entity";
+import checksums from "../../util/fileChecksums";
+import { md5 } from "../../util/hash";
 
 interface IScanResult {
   score: number;
@@ -49,9 +52,36 @@ const staticScriptScan = async (scan: WebScan) => {
       analyzeFunctions(cleanedBody, request.requestUrl, scan, request.id);
       findLinks(cleanedBody, request.requestUrl, scan, request.id);
     }
+    await verifyIntegrity(cleanedBody, request.requestUrl, scan, request);
   }
 
   return scan;
+};
+
+const verifyIntegrity = async (
+  body: string,
+  url: string,
+  scan: WebScan,
+  request: WebScanNetRequest
+) => {
+  if (request.id && scan.id) {
+    const hash = md5(body);
+    console.log(url, hash);
+  }
+
+  const fileName = request.requestUrl.split("/");
+
+  console.log("testing for", fileName[fileName.length - 1]);
+  if (
+    checksums[fileName[fileName.length - 1]] &&
+    checksums[fileName[fileName.length - 1]] === md5(body)
+  ) {
+    request.integrity = true;
+  }
+
+  scan.networkRequests = scan.networkRequests.map((r) =>
+    r.id === request.id ? request : r
+  );
 };
 
 const findEmails = (
