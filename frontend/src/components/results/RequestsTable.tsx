@@ -42,7 +42,7 @@ const RequestsTable: React.FC<ComponentProps> = ({ id, requestData }) => {
                     )}
                     {request.integrity && (
                       <i
-                        title="Integity Verified (Hash)"
+                        title="Integrity Verified (Hash)"
                         className="bi bi-file-earmark-check-fill text-info me-2"
                       ></i>
                     )}
