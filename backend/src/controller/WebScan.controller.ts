@@ -438,8 +438,8 @@ export class WebScanController {
               .replaceAll("\u0000", "")
               .replaceAll("\x00", "");
 
-            if (val.length > 75) {
-              val = val.substring(0, 75) + "...";
+            if (val.length > 150) {
+              val = val.substring(0, 150) + "...";
             }
 
             vars[key] = val;
