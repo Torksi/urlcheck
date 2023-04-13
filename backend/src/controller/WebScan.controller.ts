@@ -438,7 +438,7 @@ export class WebScanController {
               .replaceAll("\u0000", "")
               .replaceAll("\x00", "");
 
-            if (val.length > 150) {
+            if (val.length > 150 && key !== "location") {
               val = val.substring(0, 150) + "...";
             }
 
