@@ -137,3 +137,13 @@ table {
     color: $text-color;
   }
 }
+
+.alert {
+  padding: 0.6rem 0.75rem;
+}
+
+.alert-warning {
+  color: $text-color;
+  border-color: $warning;
+  background-color: rgba($warning, 0.2);
+}
