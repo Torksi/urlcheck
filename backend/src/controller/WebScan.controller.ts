@@ -19,6 +19,7 @@ import { WebScanAlert } from "../entity/WebScanAlert.entity";
 import { IScanError } from "../error/IScanError";
 import { WebScanLink } from "../entity/WebScanLink.entity";
 import { WebScanRender } from "../entity/WebScanRender.entity";
+import whoisScan from "../scan/web/whoisScan";
 
 export interface IExtendedIncomingMessage extends IncomingMessage {
   body: any;
@@ -487,6 +488,7 @@ export class WebScanController {
     await networkRequestScan(webScan, ips, countries, domains);
     await redirectScan(webScan, ips, countries, domains);
     await staticScriptScan(webScan);
+    await whoisScan(webScan);
 
     webScan.ipsContacted = ips.length;
     webScan.countriesContacted = countries.length;

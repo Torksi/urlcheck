@@ -101,6 +101,9 @@ export class WebScan extends BaseEntity {
   @Column({ type: "jsonb", default: {} })
   globalVariables: Record<string, string>;
 
+  @Column({ type: "text", default: "" })
+  whois: string;
+
   @CreateDateColumn({ type: "timestamptz" })
   createdAt: Date;
 }

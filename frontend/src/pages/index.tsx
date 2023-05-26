@@ -117,15 +117,7 @@ export default function IndexPage() {
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-md-12">
-            <p className="description intro-text">
-              Safe way to investigate suspicious content.
-            </p>
-          </div>
-        </div>
-
-        <div className="row">
+        <div className="row pt-4 mt-4">
           <div className="col-md-12">
             <Tabs
               defaultActiveKey="web"
@@ -154,7 +146,7 @@ export default function IndexPage() {
                             ref={searchInputRef}
                           />
                           <button
-                            className="btn btn-primary"
+                            className="btn btn-info"
                             type="submit"
                             id="submitButton"
                           >
@@ -207,7 +199,7 @@ export default function IndexPage() {
                           </div>
                           <div className="d-grid gap-2">
                             <button
-                              className="btn btn-primary float-end"
+                              className="btn btn-info float-end"
                               type="submit"
                               id="submitButton"
                             >
@@ -231,29 +223,23 @@ export default function IndexPage() {
           <div className="col-md-6">
             <h2 className="subtitle">About</h2>
             <p>
-              <strong>urlcheck</strong> is a powerful tool designed to detect
+              <strong>urlcheck</strong> is a tool designed to investigate
               potentially harmful links and websites. It operates by simulating
               the browsing behavior of a typical user, scanning the given URL
-              for any suspicious activities or signs of malicious intent. Once
-              the scan is complete, it generates a comprehensive report that
+              for any suspicious activities or signs of malicious content. Once
+              the scan is complete, a comprehensive report is generated that
               includes a detailed list of network requests, a screenshot of the
-              webpage, and other relevant information. It&apos;s particularly
-              useful for conducting investigations into possible phishing
-              websites.
+              webpage, and other relevant information.
             </p>
           </div>
           <div className="col-md-6">
             <h2 className="subtitle">Privacy</h2>
             <p>
               Our top priority is to safeguard your privacy when you use our
-              scanning service. When you perform a scan, we only store your IP
-              address and country based on your IP address. We use this data
-              exclusively to provide you with the scanning service you
-              requested, and we do not share it with any third parties.
-              Additionally, we automatically delete all scans and associated
-              data after 48 hours. This ensures that your personal information
-              is kept safe and secure, and that we do not retain it any longer
-              than necessary. If you have any more questions, please{" "}
+              service. We automatically delete all scans and associated data
+              after 48 hours. This ensures that your information is kept safe
+              and secure, and that we do not retain it any longer than
+              necessary. If you have any more questions, please{" "}
               <a
                 className="text-info"
                 href="https://ruhis.fi/"

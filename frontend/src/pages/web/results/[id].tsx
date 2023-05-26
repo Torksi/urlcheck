@@ -158,6 +158,27 @@ export default function ResultPage() {
     });
   }
 
+  const prettifyWhois = (obj: any, indentLevel = 0) => {
+    const indent = "  ".repeat(indentLevel);
+
+    let result = "";
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        if (typeof value === "object" && value !== null) {
+          // Recursively format nested objects
+          result += `${indent}${key}:\n${prettifyWhois(
+            value,
+            indentLevel + 1
+          )}`;
+        } else {
+          result += `${indent}${key}: ${value}\n`;
+        }
+      }
+    }
+    return result;
+  };
+
   if (notFound) {
     return (
       <div className="main">
@@ -413,6 +434,21 @@ export default function ResultPage() {
                         </tbody>
                       </table>
                     </div>
+                  )}
+                </div>
+              </div>
+            </Tab>
+            <Tab eventKey="whois" title={<span>Whois</span>}>
+              <div className="row">
+                <div className="col-md-12">
+                  <h4>Whois</h4>
+                  {rootData.whois && (
+                    <pre>{prettifyWhois(JSON.parse(rootData.whois))}</pre>
+                  )}
+                  {(!rootData.whois || rootData.whois === "") && (
+                    <p>
+                      Whois information could not be loaded for this domain/IP.
+                    </p>
                   )}
                 </div>
               </div>
