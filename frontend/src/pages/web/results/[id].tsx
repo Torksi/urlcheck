@@ -224,6 +224,20 @@ export default function ResultPage() {
   const expirationDate = moment(rootData.createdAt).add(48, "hours");
   const timeRemaining = moment.duration(expirationDate.diff(moment()));
 
+  let parsedLinkData: any[] = [];
+
+  const isObjectUnique = (array: any[], object: any) => {
+    return array.every((item) => {
+      return item.target !== object.target;
+    });
+  };
+
+  linkData.forEach((object: any) => {
+    if (isObjectUnique(parsedLinkData, object)) {
+      parsedLinkData.push(object);
+    }
+  });
+
   return (
     <div className="main">
       <Title
@@ -577,7 +591,7 @@ export default function ResultPage() {
               title={
                 <span>
                   <span className="badge text-bg-info text-white rounded-pill badge-sm me-2">
-                    {linkData ? linkData.length : 0}
+                    {parsedLinkData ? parsedLinkData.length : 0}
                   </span>
                   Links
                 </span>
@@ -585,13 +599,18 @@ export default function ResultPage() {
             >
               <div className="row">
                 <div className="col-md-12">
-                  <h4>Links{linkData ? ` (${linkData.length})` : ""}</h4>
+                  <h4>
+                    Links{parsedLinkData ? ` (${parsedLinkData.length})` : ""}
+                  </h4>
                   {!alertData && (
                     <div className="text-center">
                       <LoadingSpinner />
                     </div>
                   )}
-                  {linkData && <LinksTable id={id} linkData={linkData} />}
+                  <p>Duplicate links have been hidden.</p>
+                  {parsedLinkData && (
+                    <LinksTable id={id} linkData={parsedLinkData} />
+                  )}
                 </div>
               </div>
             </Tab>

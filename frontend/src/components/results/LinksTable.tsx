@@ -8,20 +8,6 @@ interface ComponentProps {
 }
 
 const LinksTable: React.FC<ComponentProps> = ({ id, linkData }) => {
-  let parsedLinkData: any[] = [];
-
-  const isObjectUnique = (array: any[], object: any) => {
-    return array.every((item) => {
-      return item.target !== object.target || item.url !== object.url;
-    });
-  };
-
-  linkData.forEach((object) => {
-    if (isObjectUnique(parsedLinkData, object)) {
-      parsedLinkData.push(object);
-    }
-  });
-
   return (
     <div className="table-responsive">
       <table className="table table-striped">
@@ -35,8 +21,7 @@ const LinksTable: React.FC<ComponentProps> = ({ id, linkData }) => {
         </thead>
         <tbody>
           {linkData &&
-            parsedLinkData &&
-            parsedLinkData
+            linkData
               .sort(dynamicSort("target"))
               .map((link: any, index: number) => {
                 const url = link.url.split("/");
