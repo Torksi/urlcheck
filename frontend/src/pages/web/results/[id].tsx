@@ -232,11 +232,13 @@ export default function ResultPage() {
     });
   };
 
-  linkData.forEach((object: any) => {
-    if (isObjectUnique(parsedLinkData, object)) {
-      parsedLinkData.push(object);
-    }
-  });
+  if (linkData && linkData.length > 0) {
+    linkData.forEach((object: any) => {
+      if (isObjectUnique(parsedLinkData, object)) {
+        parsedLinkData.push(object);
+      }
+    });
+  }
 
   return (
     <div className="main">
