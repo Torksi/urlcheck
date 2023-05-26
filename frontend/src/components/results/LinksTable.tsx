@@ -13,7 +13,7 @@ const LinksTable: React.FC<ComponentProps> = ({ id, linkData }) => {
       <table className="table table-striped">
         <thead>
           <tr>
-            <th scope="col">URL</th>
+            <th scope="col">Source</th>
             <th scope="col">Target</th>
             <th scope="col">Type</th>
             <th scope="col"></th>
