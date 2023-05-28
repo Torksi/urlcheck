@@ -93,7 +93,15 @@ export default function ResultPage() {
           return null;
         });
     }
-  }, [setRootData, setRequestsData, id]);
+  }, [
+    setRootData,
+    setRequestsData,
+    setRedirectData,
+    setAlertData,
+    setLinkData,
+    setRendersData,
+    id,
+  ]);
 
   const countriesList: any = [];
   const ipList: any = [];
@@ -458,10 +466,10 @@ export default function ResultPage() {
               <div className="row">
                 <div className="col-md-12">
                   <h4>Whois</h4>
-                  {rootData.whois && (
+                  {rootData && rootData.whois && (
                     <pre>{prettifyWhois(JSON.parse(rootData.whois))}</pre>
                   )}
-                  {(!rootData.whois || rootData.whois === "") && (
+                  {(!rootData || !rootData.whois || rootData.whois === "") && (
                     <p>
                       Whois information could not be loaded for this domain/IP.
                     </p>
