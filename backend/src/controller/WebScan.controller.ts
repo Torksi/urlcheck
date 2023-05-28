@@ -226,6 +226,13 @@ export class WebScanController {
     }
 
     webScan.ip = await this.resolveIP(fqdn);
+
+    if (
+      fqdnBlacklist.some((blacklisted) => webScan.ip.startsWith(blacklisted))
+    ) {
+      return { message: "Domain name is invalid", error: true } as IScanError;
+    }
+
     webScan.createdFrom = (req.headers["cf-ipcountry"] || "XX").toString();
 
     webScan.urlCountry =
