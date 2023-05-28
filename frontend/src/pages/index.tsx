@@ -252,6 +252,24 @@ export default function IndexPage() {
             </p>
           </div>
         </div>
+        <div className="row">
+          <div className="col-md-6">
+            <h2 className="subtitle">Changelog</h2>
+            <p>
+              <strong>26/05/2023:</strong>
+              <ul>
+                <li>Added Whois-results</li>
+              </ul>
+            </p>
+            <p>
+              <strong>13/04/2023:</strong>
+              <ul>
+                <li>Added global variable logging</li>
+                <li>Optimized API requests</li>
+              </ul>
+            </p>
+          </div>
+        </div>
       </main>
     </>
   );
