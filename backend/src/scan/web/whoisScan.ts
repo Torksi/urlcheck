@@ -13,7 +13,9 @@ const whoisScan = async (scan: WebScan) => {
     return;
   }
 
-  const whois = await whoiser(domainName);
+  const whois = await whoiser(domainName).catch(() => {
+    return null;
+  });
 
   if (whois) {
     scan.whois = JSON.stringify(whois);

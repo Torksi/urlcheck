@@ -80,7 +80,7 @@ export class WebScan extends BaseEntity {
   })
   fullDom: WebScanRender[];
 
-  @Column({ type: "text" })
+  @Column({ type: "text", nullable: true })
   screenshot: string;
 
   @Column({ default: 0 })

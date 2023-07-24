@@ -318,6 +318,13 @@ export class WebScanController {
           // TODO: HF
           //responseBody = null;
 
+          if (
+            !requestUrl.startsWith("http://") &&
+            !requestUrl.startsWith("https://")
+          ) {
+            throw new Error("Disallowed URL protocol");
+          }
+
           result.push({
             statusCode,
             requestUrl,
@@ -397,90 +404,100 @@ export class WebScanController {
 
     await delay(5000);
 
-    const screenshot = await page.screenshot({ quality: 75, type: "jpeg" });
+    const finalUrl = page.url();
 
-    let globalVariables = {};
+    if (finalUrl.startsWith("http://") || finalUrl.startsWith("https://")) {
+      const screenshot = await page.screenshot({ quality: 75, type: "jpeg" });
 
-    await page.exposeFunction("addGlobalVariables", function (variables: any) {
-      globalVariables = variables;
-    });
+      let globalVariables = {};
 
-    await page.exposeFunction("getGlobalWindowDefaults", function () {
-      return globalWindowDefaults;
-    });
+      await page.exposeFunction(
+        "addGlobalVariables",
+        function (variables: any) {
+          globalVariables = variables;
+        }
+      );
 
-    await page.evaluate(async () => {
-      const vars: any = {};
-      // @ts-ignore
-      const defs = await getGlobalWindowDefaults();
+      await page.exposeFunction("getGlobalWindowDefaults", function () {
+        return globalWindowDefaults;
+      });
 
-      function refReplacer() {
-        const m = new Map(),
-          v = new Map();
-        let init: any = null;
-
-        return function (field: any, value: any) {
-          const p =
-            // @ts-ignore
-            m.get(this) + (Array.isArray(this) ? `[${field}]` : "." + field);
-          const isComplex = value === Object(value);
-
-          if (isComplex) m.set(value, p);
-
-          const pp = v.get(value) || "";
-          const path = p.replace(/undefined\.\.?/, "");
-          let val = pp ? `#REF:${pp[0] === "[" ? "$" : "$."}${pp}` : value;
-
-          !init ? (init = value) : val === init ? (val = "#REF:$") : 0;
-          if (!pp && isComplex) v.set(value, path);
-
-          return val;
-        };
-      }
-
-      for (const key in window) {
+      await page.evaluate(async () => {
+        const vars: any = {};
         // @ts-ignore
-        if (!defs.includes(key)) {
-          try {
-            let val = JSON.stringify(window[key], refReplacer())
-              .replaceAll("\u0000", "")
-              .replaceAll("\x00", "");
+        const defs = await getGlobalWindowDefaults();
 
-            if (val.length > 150 && key !== "location") {
-              val = val.substring(0, 150) + "...";
+        function refReplacer() {
+          const m = new Map(),
+            v = new Map();
+          let init: any = null;
+
+          return function (field: any, value: any) {
+            const p =
+              // @ts-ignore
+              m.get(this) + (Array.isArray(this) ? `[${field}]` : "." + field);
+            const isComplex = value === Object(value);
+
+            if (isComplex) m.set(value, p);
+
+            const pp = v.get(value) || "";
+            const path = p.replace(/undefined\.\.?/, "");
+            let val = pp ? `#REF:${pp[0] === "[" ? "$" : "$."}${pp}` : value;
+
+            !init ? (init = value) : val === init ? (val = "#REF:$") : 0;
+            if (!pp && isComplex) v.set(value, path);
+
+            return val;
+          };
+        }
+
+        for (const key in window) {
+          // @ts-ignore
+          if (!defs.includes(key)) {
+            try {
+              let val = JSON.stringify(window[key], refReplacer())
+                .replaceAll("\u0000", "")
+                .replaceAll("\x00", "");
+
+              if (val.length > 150 && key !== "location") {
+                val = val.substring(0, 150) + "...";
+              }
+
+              vars[key] = val;
+            } catch (err) {
+              //
             }
-
-            vars[key] = val;
-          } catch (err) {
-            //
           }
         }
-      }
 
-      // @ts-ignore
-      addGlobalVariables(vars);
-    });
+        // @ts-ignore
+        addGlobalVariables(vars);
+      });
 
-    const fullDom = await page.evaluate(() => {
-      const dc = document as any;
-      if (dc !== null) {
-        return dc.querySelector("*").outerHTML;
-      }
-      return null;
-    });
+      const fullDom = await page.evaluate(() => {
+        const dc = document as any;
+        if (dc !== null) {
+          return dc.querySelector("*").outerHTML;
+        }
+        return null;
+      });
+
+      webScan.screenshot = screenshot.toString("base64");
+      webScan.globalVariables = globalVariables;
+      const fd = new WebScanRender();
+      fd.body = fullDom;
+
+      webScan.fullDom = [fd];
+    } else {
+      webScan.screenshot =
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+    }
 
     await browser.close();
 
-    webScan.screenshot = screenshot.toString("base64");
     webScan.networkRequests = result;
     webScan.redirects = redirects;
     webScan.redirectCount = redirects.length;
-    webScan.globalVariables = globalVariables;
-
-    const fd = new WebScanRender();
-    fd.body = fullDom;
-
-    webScan.fullDom = [fd];
 
     await appDataSource.manager.save(webScan);
 

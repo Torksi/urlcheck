@@ -1,6 +1,7 @@
 import { GeoIPController } from "../../controller/GeoIP.controller";
 import { WebScanController } from "../../controller/WebScan.controller";
 import { WebScan } from "../../entity/WebScan.entity";
+import { WebScanAlert } from "../../entity/WebScanAlert.entity";
 
 const networkRequestScan = async (
   scan: WebScan,
@@ -8,12 +9,26 @@ const networkRequestScan = async (
   ips: string[],
   countries: string[]
 ) => {
+  if (scan.alerts === null || scan.alerts === undefined) {
+    scan.alerts = [];
+  }
+
   //TODO: HF
   const skipGeolocating = scan.networkRequests.length > 250;
   for (const request of scan.networkRequests) {
     if (
       !["https://", "http://"].some((x) => request.requestUrl.startsWith(x))
     ) {
+      const alert = new WebScanAlert();
+      alert.webScan = scan;
+      alert.url = request.requestUrl;
+      alert.description = `Tried to load resource with ${request.requestMethod} from non-HTTP(S) URL`;
+      alert.method = "Request Analysis";
+      alert.data = "";
+      alert.webScanRequestId = request.id;
+      alert.suspicionLevel = 3;
+      scan.alerts.push(alert);
+
       request.failed = true;
       request.geoCity = "N/A";
       request.geoCountry = "XX";
