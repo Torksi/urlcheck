@@ -291,6 +291,9 @@ export default function ResultPage() {
           <p style={{ lineBreak: "anywhere" }}>
             <strong>URL:</strong> {rootData.url}
           </p>
+          <p style={{ lineBreak: "anywhere" }}>
+            <strong>Final URL:</strong> {rootData.finalUrl}
+          </p>
           <p>
             <strong>Scanned:</strong>{" "}
             {moment(rootData.createdAt).utc().format("MMMM Do YYYY, HH:mm:ss")}{" "}

@@ -104,6 +104,9 @@ export class WebScan extends BaseEntity {
   @Column({ type: "text", default: "" })
   whois: string;
 
+  @Column({ default: "" })
+  finalUrl: string;
+
   @CreateDateColumn({ type: "timestamptz" })
   createdAt: Date;
 }

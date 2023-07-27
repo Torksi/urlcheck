@@ -498,6 +498,7 @@ export class WebScanController {
     webScan.networkRequests = result;
     webScan.redirects = redirects;
     webScan.redirectCount = redirects.length;
+    webScan.finalUrl = finalUrl;
 
     await appDataSource.manager.save(webScan);
 
